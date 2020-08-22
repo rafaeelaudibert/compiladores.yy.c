@@ -1,4 +1,4 @@
-name: Test Etapa 1
+name: Etapa1
 on:
   push:
     branches:
