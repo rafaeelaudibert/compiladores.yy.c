@@ -1,5 +1,5 @@
 CC=gcc
-LEX=$(shell if ! type "lex" &> /dev/null; then echo "flex"; else echo "lex"; fi)
+LEX=flex
 FILENAME=etapa1
 
 ${FILENAME}: lex.yy.o hash.o main.o
