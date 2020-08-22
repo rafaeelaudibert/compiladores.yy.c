@@ -109,3 +109,12 @@ can_compare     >=    with_many_spaces
 1234AZ
 1234az
 ifelse
+int a = 5;
+char function_name_with_@(int x1) {
+    bool this_is_a_cool_variable = TRUE;
+    if ( x1 >= 0AB ) {
+        print("Bigger or equal to 0x0AB :)\n");
+    } else {
+        print("Smaller than 0x0AB :(\n");
+    }
+}
