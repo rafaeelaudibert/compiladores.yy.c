@@ -3,12 +3,15 @@
 #define FALSE 0
 #define TRUE 1
 
-// Retorna TRUE caso já tenhamos finalizado de ler o arquivo,
-// caso contrário, FALSE
+// Returns TRUE if we are already done reading the file,
+// else, FALSE
 int isRunning(void);
 
-// Retorna em qual linha estamos atualmente ao ler o arquivo
+// Returns which is the current line in the file being lexed
 int getLineNumber(void);
 
-// Declaração da yylex para acessar na main depois
+// Declare to be able to access on main.c later on
 int yylex(void);
+
+// Used to initialize any needed data
+void initMe(void);

@@ -88,3 +88,8 @@ int yywrap()
     is_running = FALSE;
     return 1;
 }
+
+void initMe(void)
+{
+    
+}

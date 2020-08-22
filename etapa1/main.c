@@ -3,10 +3,10 @@
 
 // Fornecido pelo lexer em lex.yy.c
 extern char *yytext;
-extern char *str;
 
 int main(int argc, int *argv)
 {
+    initMe();
 
     int tok;
     while (isRunning() == TRUE)
