@@ -23,61 +23,61 @@ int getLineNumber(void) {
 [ \t]
 
  /* Detect new lines to increase line_number counter */
-"\n"        ++line_number;
+"\n"        { ++line_number; }
 
  /* Type keywords */
-"char"      return KW_CHAR;
-"int"       return KW_INT;
-"float"     return KW_FLOAT;
-"bool"      return KW_BOOL;
+"char"      { return KW_CHAR; }
+"int"       { return KW_INT; }
+"float"     { return KW_FLOAT; }
+"bool"      { return KW_BOOL; }
 
  /* Flow Control keywords */
-"if"        return KW_IF;
-"then"      return KW_THEN;
-"else"      return KW_ELSE;
-"while"     return KW_WHILE;
-"loop"      return KW_LOOP;
-"return"    return KW_RETURN;
+"if"        { return KW_IF; }
+"then"      { return KW_THEN; }
+"else"      { return KW_ELSE; }
+"while"     { return KW_WHILE; }
+"loop"      { return KW_LOOP; }
+"return"    { return KW_RETURN; }
 
  /* IO keywords */
-"read"      return KW_READ;
-"print"     return KW_PRINT;
+"read"      { return KW_READ; }
+"print"     { return KW_PRINT; }
 
  /* Operators */
-[\,\;\:\(\)\[\]\{\}\+\-\*\/\<\>\=\|\^\~\&\$\#]  return yytext[0];
+[\,\;\:\(\)\[\]\{\}\+\-\*\/\<\>\=\|\^\~\&\$\#]  { return yytext[0]; }
 
  /* Composite Operators */
-"<="        return OPERATOR_LE;
-">="        return OPERATOR_GE;
-"=="        return OPERATOR_EQ;
-"!="        return OPERATOR_DIF;
+"<="        { return OPERATOR_LE; }
+">="        { return OPERATOR_GE; }
+"=="        { return OPERATOR_EQ; }
+"!="        { return OPERATOR_DIF; }
 
  /* Precedence for TRUE and FALSE constants instead of an identifier */
-"TRUE"                  return LIT_TRUE;
-"FALSE"                 return LIT_FALSE;
+"TRUE"                  { return LIT_TRUE; }
+"FALSE"                 { return LIT_FALSE; }
 
  /* Identifiers */
-[a-zA-Z@_][0-9a-zA-Z@_]*    return TK_IDENTIFIER;
+[a-zA-Z@_][0-9a-zA-Z@_]*    { hashInsert(yytext); return TK_IDENTIFIER; }
 
  /* Integer and float literals (hexadecimal) */
-[A-F0-9]+               return LIT_INTEGER;
-[A-F0-9]*\.[A-F0-9]+    return LIT_FLOAT;
+[A-F0-9]+               { hashInsert(yytext); return LIT_INTEGER; }
+[A-F0-9]*\.[A-F0-9]+    { hashInsert(yytext); return LIT_FLOAT; }
 
  /* Chars and Strings */
-'(\\.|[^'\n\t])'    return LIT_CHAR;
-\"([^"\\\n]|\\.)*\" return LIT_STRING;
+'(\\.|[^'\n\t])'        { hashInsert(yytext); return LIT_CHAR; }
+\"([^"\\\n]|\\.)*\"     { hashInsert(yytext); return LIT_STRING; }
 
  /* Comments */
 "//".*
-"/*"        BEGIN(COMMENT);
+"/*"        { BEGIN(COMMENT); }
 
  /* On Comment mode, ignore everything until
     it reaches an end of comment token */
-<COMMENT>"*/" BEGIN(INITIAL);
-<COMMENT>"\n" ++line_number;
+<COMMENT>"*/"   { BEGIN(INITIAL); }
+<COMMENT>"\n"   { ++line_number; }
 <COMMENT>.
 
-.       return TOKEN_ERROR;
+.               { return TOKEN_ERROR; }
 
 %%
 
@@ -91,5 +91,5 @@ int yywrap()
 
 void initMe(void)
 {
-    
+    hashInit();
 }
