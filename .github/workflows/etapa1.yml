@@ -15,3 +15,13 @@ jobs:
       run: make clean || make
     - name: Run tests
       run: make test
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install sshpass
+      run: sudo apt-get install -y sshpass
+    - name: Give permission to run deploy script
+      run: chmod +x ./deploy.ci.sh
+    - name: Deploy it
+      run: ./deploy.ci.sh etapa1 ${{ secrets.SCP_PASSWORD }}
