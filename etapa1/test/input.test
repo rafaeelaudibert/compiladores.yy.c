@@ -1,0 +1,111 @@
+char
+int
+float
+bool
+if
+then
+else
+while
+loop
+read
+print
+return
+,
+;
+:
+(
+)
+[
+]
+{
+}
++
+-
+*
+/
+<
+>
+=
+|
+^
+~
+&
+$
+#
+<=
+>=
+==
+!=
+identifier
+2BC4
+2B.875F
+TRUE
+FALSE
+'a'
+"abcde"
+?
+
+
+float int char
+B5C34
+0B5C34
+.B5C34
+
+// Comment
+// Another comment
+variable_with_underline
+variable_with_an_@
+
+/* */
+empty_multiline_comment_above
+
+/* one line */
+one_line_multiline_comment_above
+
+/*
+ text
+ in
+
+ between
+ multiline comment
+*/
+multiline_comment_above
+"andy" "rafael"
+"broken
+string"
+"string with a \n"
+a identifier after the other
+identifier+other_identifier
+0B45*786.45
+'charwithmanyletters'
+identifier TRUE FALSE identifier2
+/* */ 45#identifier_after_multiline_comment
+can_compare     >=    with_many_spaces
+
+
+ 
+ 
+
+
+
+
+
+    
+
+
+      
+
+
+   
+
+
+/*
+
+
+
+
+*/
+"many lines in blank above with spaces on them"
+1234AZ
+1234az
+ifelse
