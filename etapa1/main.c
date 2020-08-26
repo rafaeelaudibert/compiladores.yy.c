@@ -34,5 +34,11 @@ int main(int argc, int *argv)
     printf("\n-----\n");
     hashPrint();
 
+    initMe();
+    printf("Resetting, expecting line_number 1: %d\n", getLineNumber());
+
+    initMe();
+    printf("Resetting again, expecting line_number 1: %d\n", getLineNumber());
+
     return 0;
 }

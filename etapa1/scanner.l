@@ -91,5 +91,10 @@ int yywrap()
 
 void initMe(void)
 {
+    // Initialize hash
     hashInit();
+
+    // Initialize variables
+    is_running = TRUE;
+    line_number = 1;
 }
