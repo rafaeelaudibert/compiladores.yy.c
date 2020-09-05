@@ -17,6 +17,7 @@ jobs:
       run: make test
   deploy:
     runs-on: ubuntu-latest
+    needs: test
     steps:
     - uses: actions/checkout@v1
     - name: Install sshpass
