@@ -1,6 +1,7 @@
 # Compiladores.yy.c 🧶
 
 [![Actions Status](https://github.com/rafaeelaudibert/compiladores.yy.c/workflows/Etapa1/badge.svg)](https://github.com/rafaeelaudibert/compiladores.yy.c/actions)
+[![Actions Status](https://github.com/rafaeelaudibert/compiladores.yy.c/workflows/Etapa2/badge.svg)](https://github.com/rafaeelaudibert/compiladores.yy.c/actions)
 
 Repository with code related to INF01147 Compiladores (Compilers 101) course, coursed at UFRGS, by Professor Marcelo Johann.
 
