@@ -153,6 +153,7 @@ expression: TK_IDENTIFIER
     | '(' expression ')'
     | expression '+' expression
     | expression '-' expression
+    | '-' expression
     | expression '*' expression
     | expression '/' expression
     | expression '<' expression
