@@ -149,6 +149,7 @@ expression: TK_IDENTIFIER
     | LIT_CHAR
     | LIT_INTEGER
     | LIT_FLOAT
+    | lit_bool
     | '(' expression ')'
     | expression '+' expression
     | expression '-' expression
