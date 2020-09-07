@@ -160,7 +160,7 @@ expression: TK_IDENTIFIER
     | expression '>' expression
     | expression '|' expression
     | expression '^' expression
-    | expression '~' expression
+    | '~' expression
     | expression OPERATOR_LE expression
     | expression OPERATOR_GE expression
     | expression OPERATOR_EQ expression
