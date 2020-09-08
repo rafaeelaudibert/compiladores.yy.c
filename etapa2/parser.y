@@ -86,11 +86,11 @@ declv_not_vector: TK_IDENTIFIER '=' any_kw_type ':' any_lit
 
  /* Variable declaration when is not a vector */
  /* We have the rule with initialization first, and without initialization later */
-declv_vector: TK_IDENTIFIER '=' any_kw_type '[' LIT_INTEGER ']' ':' vector_list
+declv_vector: TK_IDENTIFIER '=' any_kw_type '[' LIT_INTEGER ']' ':' lvector
     | TK_IDENTIFIER '=' any_kw_type '[' LIT_INTEGER ']'
     ;
 
-vector_list: any_lit vector_list
+lvector: any_lit lvector
     | any_lit
     ;
 
@@ -100,14 +100,14 @@ declf: function_header block
 function_header: TK_IDENTIFIER function_params '=' any_kw_type
     ;
 
-function_params: '(' param_list ')'
+function_params: '(' lparam ')'
     | '(' ')'
     ;
 
-param_list: TK_IDENTIFIER '=' any_kw_type rest_params
+lparam: TK_IDENTIFIER '=' any_kw_type rest_params
     ;
 
-rest_params: ',' param_list
+rest_params: ',' lparam
     |
     ;
 
@@ -115,7 +115,7 @@ block: '{' lcommand '}'
     ;
 
 lcommand: command lcommand
-    | 
+    | command
     ;
 
 command: attrib
@@ -124,7 +124,7 @@ command: attrib
     | print_command
     | return_command
     | block
-    | expression
+    |
     ;
 
 attrib: TK_IDENTIFIER '=' expression
@@ -134,12 +134,12 @@ attrib: TK_IDENTIFIER '=' expression
 read_command: KW_READ TK_IDENTIFIER
     ;
 
-print_command: KW_PRINT list_print
+print_command: KW_PRINT lprint
     ;
 
-list_print: LIT_STRING ',' list_print
+lprint: LIT_STRING ',' lprint
     | LIT_STRING
-    | expression ',' list_print
+    | expression ',' lprint
     | expression
     ;
 
@@ -155,21 +155,18 @@ flow_command: KW_IF '(' expression ')' KW_THEN command
 
 expression: TK_IDENTIFIER
     | TK_IDENTIFIER '[' expression ']'
-    | LIT_CHAR
-    | LIT_INTEGER
-    | LIT_FLOAT
-    | lit_bool
+    | any_lit
     | '(' expression ')'
+    | '-' expression
+    | '~' expression
     | expression '+' expression
     | expression '-' expression
-    | '-' expression
     | expression '*' expression
     | expression '/' expression
     | expression '<' expression
     | expression '>' expression
     | expression '|' expression
     | expression '^' expression
-    | '~' expression
     | expression OPERATOR_LE expression
     | expression OPERATOR_GE expression
     | expression OPERATOR_EQ expression
@@ -177,14 +174,14 @@ expression: TK_IDENTIFIER
     | func_call
     ;
 
-func_call: TK_IDENTIFIER '(' list_parameter_func_call ')'
+func_call: TK_IDENTIFIER '(' lparameter_func_call ')'
     | TK_IDENTIFIER  '(' ')'
     ;
 
-list_parameter_func_call: expression rest_params_func_call
+lparameter_func_call: expression rest_params_func_call
     ;
 
-rest_params_func_call: ',' list_parameter_func_call
+rest_params_func_call: ',' lparameter_func_call
     |
     ;
 
@@ -199,7 +196,7 @@ extern int getLineNumber();
 
 int yyerror()
 {
-    fprintf(stderr, "Syntax error at line %d\n", getLineNumber() );
+    fprintf(stderr, "Syntax error at line %d\n", getLineNumber());
 
     exit(3);
 }
