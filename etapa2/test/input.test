@@ -93,6 +93,8 @@ checking_syntax_@(w = float) = bool {
   loop(id:1, 5 + 5, 2|4)
     print id, " without a block"
 
+  if (5 > 6) then else print "abcde", "jki", 'c'
+
   id_char = 'c'
   id_int = 15
   id_float = .AB4
