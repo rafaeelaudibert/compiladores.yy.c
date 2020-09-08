@@ -28,8 +28,17 @@
 
 %token TOKEN_ERROR
 
+ // Precedence rules
+%left '|' '^'
+%left '<' '>' OPERATOR_LE OPERATOR_GE OPERATOR_EQ OPERATOR_DIF
+%left '+' '-'
+%left '*' '/'
+%left '~'
+
+
+
 %{
-// Declarations to get rid of warnings abount not finding function when compiling
+// Declarations to get rid of warnings about not finding function when compiling
 // It will work just fine in the linking step of the compilation
 int yylex();
 int yyerror();
