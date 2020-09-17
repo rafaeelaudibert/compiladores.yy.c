@@ -15,4 +15,4 @@
 **/*.tgz
 
 # Output for tests file
-**/test/output.test
+**/test/output*.test
