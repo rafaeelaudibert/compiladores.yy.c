@@ -26,10 +26,22 @@ int getLineNumber(void) {
 "\n"        { ++line_number; }
 
  /* Type keywords */
-"char"      { return KW_CHAR; }
-"int"       { return KW_INT; }
-"float"     { return KW_FLOAT; }
-"bool"      { return KW_BOOL; }
+"char"      {
+    yylval.symbol = hashInsert(yytext, KW_CHAR);
+    return KW_CHAR;
+}
+"int"       {
+    yylval.symbol = hashInsert(yytext, KW_INT);
+    return KW_INT;
+}
+"float"     {
+    yylval.symbol = hashInsert(yytext, KW_FLOAT);
+    return KW_FLOAT;
+}
+"bool"      {
+    yylval.symbol = hashInsert(yytext, KW_BOOL);
+    return KW_BOOL;
+}
 
  /* Flow Control keywords */
 "if"        { return KW_IF; }

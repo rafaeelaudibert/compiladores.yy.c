@@ -4,17 +4,20 @@
 
     // Helper to create a symbol AST
     #define SYMBOL_AST(x) AST_create(AST_SYMBOL, x, NULL, NULL, NULL, NULL, NULL)
+
+    AST* ASTroot = NULL;
 %}
+
 
 %union{
     HASH_NODE *symbol;
     AST *ast;
 }
 
-%token KW_CHAR
-%token KW_INT
-%token KW_FLOAT
-%token KW_BOOL
+%token<symbol> KW_CHAR
+%token<symbol> KW_INT
+%token<symbol> KW_FLOAT
+%token<symbol> KW_BOOL
 
 %token KW_IF
 %token KW_THEN
@@ -95,7 +98,7 @@ int yyerror();
 %%
 
  /* First rule, defining a program */
-programa: ldecl         { AST_print($1, 0); }
+programa: ldecl         { $$ = $1; ASTroot = $$; }
     ;
 
  /* Always finish a declaration with a `;`, and also accept an empty ldecl */
@@ -110,11 +113,10 @@ lit_bool: LIT_TRUE      { $$ = SYMBOL_AST($1); }
     ;
 
  /* Helper rule with all type keywords */
- /*  TODO: Make it actually save the keywords */
-any_kw_type: KW_CHAR    { $$ = NULL; }
-    | KW_INT            { $$ = NULL; }
-    | KW_FLOAT          { $$ = NULL; }
-    | KW_BOOL           { $$ = NULL; }
+any_kw_type: KW_CHAR    { $$ = SYMBOL_AST($1);  }
+    | KW_INT            { $$ = SYMBOL_AST($1);  }
+    | KW_FLOAT          { $$ = SYMBOL_AST($1);  }
+    | KW_BOOL           { $$ = SYMBOL_AST($1);  }
     ;
 
 /* Helper rule with all literals keywords, except string */
@@ -139,8 +141,8 @@ declv_vector: TK_IDENTIFIER '=' any_kw_type '[' LIT_INTEGER ']' ':' lvector { $$
     | TK_IDENTIFIER '=' any_kw_type '[' LIT_INTEGER ']'                     { $$ = AST_create( AST_DECLV_VECTOR, NULL, SYMBOL_AST($1), $3, SYMBOL_AST($5), NULL, NULL); }
     ;
 
-lvector: any_lit lvector            { $$ = AST_create( AST_DECLV_VECTOR, NULL, $1, $2, NULL, NULL, NULL); }
-    | any_lit                       { $$ = AST_create( AST_DECLV_VECTOR, NULL, $1, NULL, NULL, NULL, NULL); }
+lvector: any_lit lvector            { $$ = AST_create( AST_LVECTOR, NULL, $1, $2, NULL, NULL, NULL); }
+    | any_lit                       { $$ = AST_create( AST_LVECTOR, NULL, $1, NULL, NULL, NULL, NULL); }
     ;
 
 declf: function_header block        { $$ = AST_create( AST_FUNC, NULL, $1, $2, NULL, NULL, NULL); }
