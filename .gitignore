@@ -16,3 +16,6 @@
 
 # Output for tests file
 **/test/output*.test
+
+# VSCode files
+.vscode
