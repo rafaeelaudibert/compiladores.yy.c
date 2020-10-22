@@ -46,6 +46,7 @@ void main(const int argc, const char **argv)
             fprintf(stdout, (char *)semantic_errors->val);
             fprintf(stdout, "\n");
         } while (semantic_errors = semantic_errors->next);
+
         exit(STATUS_EXIT_SEMANTIC_ERROR);
     }
 

@@ -340,7 +340,7 @@ ChainedList *fill_global_types(AST *ast)
             new_errors = fill_global_types_func(decl);
             break;
         default:
-            fprintf(stdout, "NOT IMPLEMENTED fill_hash_table_types FOR THIS TYPE");
+            fprintf(stderr, "NOT IMPLEMENTED fill_hash_table_types FOR THIS TYPE");
             break;
         }
 
@@ -366,6 +366,83 @@ ChainedList *fill_global_types(AST *ast)
     return reversed_error_list;
 }
 
+ChainedList *get_type_errors_for_func(AST *func)
+{
+    ChainedList *errors = NULL;
+
+    AST *func_header = func->child[0];
+
+    // Fill the hashTable with the local types
+    AST *func_params = func_header->child[1];
+    while (func_params)
+    {
+        HASH_NODE *symbol = func_params->child[0]->symbol;
+        DATA_TYPE type = map_kw_to_dt(func_params->child[1]->symbol->type);
+
+        // Use the first type, for the cases where it is being redeclared
+        if (symbol->local_data_type == DT_NONE)
+        {
+            symbol->local_data_type = type;
+        }
+
+        // Go to the next parameter
+        func_params = func_params->child[2];
+    }
+
+    // TODO:
+    //      Iterate through the tree checking for correct types
+    //          Mark DT on AST nodes
+    //      Check the returned value is from the right type
+    //          find the return AST node
+    //          check that the node DT is the same as the function return value
+
+    // Remove the local types from the hashTable
+    func_params = func_header->child[1];
+    while (func_params)
+    {
+        HASH_NODE *symbol = func_params->child[0]->symbol;
+        symbol->local_data_type = DT_NONE;
+
+        // Go to the next parameter
+        func_params = func_params->child[2];
+    }
+
+    return errors;
+}
+
+/// TODO DOCS: Recursively iterate over the AST building the errors
+ChainedList *get_type_errors(AST *ast)
+{
+
+    ChainedList *type_errors = NULL;
+    while (ast)
+    {
+        AST *node = ast->child[0];
+        if (node->type == AST_FUNC)
+        {
+            ChainedList *func_errors = get_type_errors_for_func(node);
+
+            // Append to the end of type_errors
+            if (func_errors)
+            {
+                ChainedList *curr_error = func_errors;
+                while (curr_error->next)
+                {
+                    curr_error = curr_error->next;
+                }
+
+                curr_error->next = type_errors;
+                type_errors = curr_error;
+            }
+        }
+
+        // Go to the next LDECL
+        ast = ast->child[1];
+    }
+
+    return type_errors;
+}
+
 /// Given an AST root, makes the semantic analysis.
 /// It will:
 ///     - Fill the hash table with the correct data and identifier types
@@ -380,5 +457,20 @@ ChainedList *fill_global_types(AST *ast)
 ChainedList *get_semantic_errors(AST *ast)
 {
     ChainedList *decl_errors = fill_global_types(ast);
+    ChainedList *type_errors = get_type_errors(ast);
+
+    if (!decl_errors)
+    {
+        return type_errors;
+    }
+
+    // Go to the end of decl_errors, and append type_errors to return both of them
+    ChainedList *curr = decl_errors;
+    while (curr->next)
+    {
+        curr = curr->next;
+    }
+    curr->next = type_errors;
+
     return decl_errors;
 }

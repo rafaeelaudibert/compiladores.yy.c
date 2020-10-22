@@ -89,8 +89,10 @@ HASH_NODE *hashInsert(char *text, int type)
         //      * declared an identifier twice
         //      * used an identifier as it should (scalar, vector, function)
         //      * used an identifier with its type (int, float, char, bool)
+        //      * declared it as a parameter in the local scope, with a different type
         new_node->data_type = DT_NONE;
         new_node->identifier_type = DT_NONE;
+        new_node->local_data_type = DT_NONE;
 
         int address = hashAddress(text);
         new_node->next = table[address];

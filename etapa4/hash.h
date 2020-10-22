@@ -20,6 +20,12 @@ typedef struct hash_node
     DATA_TYPE data_type;
     IDENTIFIER_TYPE identifier_type;
 
+    // This is used in the local scope, so that we have a easy lookup table
+    // for parameter declarations in functions
+    // It is filled with the local data type when entering the AST_FUNC AST's node
+    // and returned to DT_NONE when leaving its body
+    DATA_TYPE local_data_type;
+
     // Used if id_type is IT_FUNCTION, to know the order of the parameters types
     ChainedList *params_data_type;
 } HASH_NODE;

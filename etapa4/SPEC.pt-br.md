@@ -40,9 +40,9 @@ d. **Argumentos e parâmetros** – A lista de argumentos deve ser verificada co
 
 #### Lista de Verificações
 
-* variáveis redeclaradas
-* anotar tipo (natureza) nas tabela hash
-* anotar tipo de dado (`dataType`) na tabela hash
+* variáveis redeclaradas ✔️
+* anotar tipo (natureza) nas tabela hash ✔️
+* anotar tipo de dado (`dataType`) na tabela hash ✔️
 * variáveis não-declaradas
 * verificar natureza, se:
   * escalares são usados como escalares
