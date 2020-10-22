@@ -1,5 +1,10 @@
 // UFRGS - Compiladores - Marcelo Johann - 2020/1
 
+
+incn (x = int, n = int, x = bool, k = char, n = float, j = bool, j=float) = int {
+  return x+n
+};
+
 v1 = int[10]: 0 0 'C' 0 0 0.4F 0 FALSE TRUE; 
 
 b = bool : FALSE;

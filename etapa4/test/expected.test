@@ -1,0 +1,35 @@
+Found some semantic errors!!
+
+Param x at line 4 already declared in this function before
+Param n at line 4 already declared in this function before
+Param j at line 4 already declared in this function before
+Identifier v1 at line 8 received incompatible initialization value FALSE
+Identifier v1 at line 8 received incompatible initialization value TRUE
+Identifier v1 at line 8 should receive 10 itens in initialization but received 9
+Identifier v1 at line 16 already declared before
+Identifier b at line 129 already declared before
+Identifier c at line 131 already declared before
+Identifier a at line 132 already declared before
+Identifier i at line 133 already declared before
+Identifier f at line 134 already declared before
+Identifier v1 at line 135 already declared before
+Identifier mat at line 137 already declared before
+Identifier b at line 195 already declared before
+Identifier c at line 197 already declared before
+Identifier a at line 198 already declared before
+Identifier i at line 199 already declared before
+Identifier f at line 200 already declared before
+Identifier v1 at line 201 already declared before
+Identifier mat at line 202 already declared before
+Identifier b at line 204 already declared before
+Identifier c at line 206 already declared before
+Identifier a at line 207 already declared before
+Identifier i at line 208 already declared before
+Identifier f at line 209 already declared before
+Identifier v1 at line 210 already declared before
+Identifier mat at line 211 already declared before
+Identifier b at line 221 already declared before
+Identifier c at line 223 already declared before
+Identifier a at line 224 already declared before
+Identifier i at line 225 already declared before
+Identifier f at line 226 already declared before

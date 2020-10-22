@@ -1,13 +1,5 @@
 #include "semanticParser.h"
-
-// Ex: Identifier abcd at line 15 being already declared before
-const char *MESSAGE_REDECLARATION = "Identifier %s at line %d already declared before";
-
-// Ex: Identifier abcd at line 15 received incompatible initialization value .0f12c
-const char *MESSAGE_INCOMPATIBLE_INITIALIZATION = "Identifier %s at line %d received incompatible initialization value %s";
-
-// Ex: Identifier abcd at line 15 should receive 10 itens in initialization but received 4
-const char *MESSAGE_WRONG_NUMBER_ITENS_VECTOR = "Identifier %s at line %d should receive %d itens in initialization but received %d";
+#include "messages.h"
 
 // @returns A fixed size buffer for error messages, with enough size
 char *create_error_message_buffer()
@@ -16,20 +8,6 @@ char *create_error_message_buffer()
 
     char *buffer = (char *)malloc(1024 * sizeof(char));
     return buffer;
-}
-
-/// Creates a ChainedList node, pointing to NULL, and a val as `val`
-///
-/// @param val A pointer to void value, which this ChainedList will point to
-///
-/// @returns A new pointer to a ChainedList node
-ChainedList *create_chained_list(void *val)
-{
-    ChainedList *cl = (ChainedList *)malloc(sizeof(ChainedList));
-    cl->next = NULL;
-    cl->val = (void *)val;
-
-    return cl;
 }
 
 DATA_TYPE map_lit_to_dt(int lit)
@@ -57,7 +35,31 @@ DATA_TYPE map_lit_to_dt(int lit)
     return mapped_dt;
 }
 
-ChainedList *fill_hash_table_declv_not_vector(AST *decl)
+DATA_TYPE map_kw_to_dt(int kw)
+{
+    DATA_TYPE mapped_dt = DT_NONE;
+    switch (kw)
+    {
+    case KW_INT:
+        mapped_dt = DT_INT;
+        break;
+    case KW_FLOAT:
+        mapped_dt = DT_FLOAT;
+        break;
+    case KW_CHAR:
+        mapped_dt = DT_CHAR;
+        break;
+    case KW_BOOL:
+        mapped_dt = DT_BOOL;
+        break;
+    default:
+        break;
+    }
+
+    return mapped_dt;
+}
+
+ChainedList *fill_global_types_declv_not_vector(AST *decl)
 {
     ChainedList *error = NULL;
 
@@ -117,33 +119,7 @@ ChainedList *fill_hash_table_declv_not_vector(AST *decl)
     return error;
 }
 
-/*
-AST_DECLV_VECTOR
-    AST_SYMBOL(v1)
-    AST_SYMBOL(int)
-    AST_SYMBOL(10)
-    AST_LVECTOR
-        AST_SYMBOL(0)
-        AST_LVECTOR
-            AST_SYMBOL(0)
-            AST_LVECTOR
-                AST_SYMBOL(0)
-                AST_LVECTOR
-                    AST_SYMBOL(0)
-                    AST_LVECTOR
-                        AST_SYMBOL(0)
-                        AST_LVECTOR
-                            AST_SYMBOL(0)
-                            AST_LVECTOR
-                                AST_SYMBOL(0)
-                                AST_LVECTOR
-                                    AST_SYMBOL(0)
-                                    AST_LVECTOR
-                                        AST_SYMBOL(0)
-                                        AST_LVECTOR
-                                            AST_SYMBOL(0)
-*/
-ChainedList *fill_hash_table_declv_vector(AST *decl)
+ChainedList *fill_global_types_declv_vector(AST *decl)
 {
     ChainedList *error = NULL;
 
@@ -229,34 +205,165 @@ ChainedList *fill_hash_table_declv_vector(AST *decl)
     return error;
 }
 
-ChainedList *fill_hash_table_types(AST *ast)
+ChainedList *fill_global_types_func(AST *decl)
 {
-    if (!ast)
+    ChainedList *error = NULL;
+
+    // Acess the header, as it is the only important
+    decl = decl->child[0];
+
+    HASH_NODE *symbol = decl->child[0]->symbol;
+    DATA_TYPE symbol_data_type = symbol->data_type; // DT_NONE or DT_INT
+    char *symbol_text = symbol->text;               // b
+    int symbol_line = decl->child[0]->line_number;  // 3
+    int symbol_type = decl->child[2]->type;         // KW_INT
+
+    // Check first for redeclarations
+    if (symbol_data_type != DT_NONE)
     {
-        return NULL;
+        // Already declared before
+        char *error_message = create_error_message_buffer();
+        sprintf(error_message, MESSAGE_REDECLARATION, symbol_text, symbol_line);
+        error = create_chained_list((void *)error_message);
+    }
+    else
+    {
+        // Fill symbol IT and DT, and it is not declared
+        symbol->identifier_type = IT_FUNCTION;
+        switch (symbol_type)
+        {
+        case KW_INT:
+            symbol->data_type = DT_INT;
+            break;
+        case KW_FLOAT:
+            symbol->data_type = DT_FLOAT;
+            break;
+        case KW_CHAR:
+            symbol->data_type = DT_CHAR;
+            break;
+        case KW_BOOL:
+            symbol->data_type = DT_BOOL;
+            break;
+        }
     }
 
-    // Here we have, as *decl a node with type AST_DECLV_NOT_VECTOR
-    // or AST_DECLV_VECTOR or AST_FUNC
-    //
-    // TODO: Do for the other case AST_FUNC
-    AST *decl = ast->child[0];
-
-    ChainedList *error = NULL;
-    switch (decl->type)
+    // OBS: On this run through the AST, we don't check for the parameter types,
+    // we only store them in the AST, to later use when checking if a function was
+    // called with the correct types
+    if (!error)
     {
-    case AST_DECLV_NOT_VECTOR:
-        error = fill_hash_table_declv_not_vector(decl);
-        break;
-    case AST_DECLV_VECTOR:
-        error = fill_hash_table_declv_vector(decl);
-        break;
-    default:
-        fprintf(stdout, "NOT IMPLEMENTED fill_hash_table_types FOR THIS TYPE");
-        break;
+        AST *values = decl->child[1];
+        ChainedList *params_types_start = NULL, *param_types_curr = NULL;
+        ChainedList *param_names = NULL;
+
+        while (values)
+        {
+
+            DATA_TYPE *mapped_initialized_dt = (DATA_TYPE *)malloc(sizeof(DATA_TYPE));
+            char *param_name = values->child[0]->symbol->text;           // x
+            int initialized_value_kw = values->child[1]->symbol->type;   // KW_INT
+            *mapped_initialized_dt = map_kw_to_dt(initialized_value_kw); // DT_INT
+
+            ChainedList *new_param_type = create_chained_list((void *)mapped_initialized_dt);
+            if (param_types_curr)
+            {
+                param_types_curr->next = new_param_type;
+            }
+            param_types_curr = new_param_type;
+            if (!params_types_start)
+                params_types_start = param_types_curr;
+
+            // TODO: Improve this linear time searching for duplicate name in param list
+            ChainedList *curr_param_name = param_names;
+            int has_name_conflict = 0;
+            while (curr_param_name)
+            {
+                // Error
+                if (strcmp((char *)curr_param_name->val, param_name) == 0)
+                {
+                    has_name_conflict = 1;
+                    break;
+                }
+                curr_param_name = curr_param_name->next;
+            }
+
+            if (has_name_conflict)
+            {
+                // Already declared before
+                char *error_message = create_error_message_buffer();
+                sprintf(error_message, MESSAGE_PARAM_REDECLARATION, param_name, symbol_line);
+                ChainedList *new_error = create_chained_list((void *)error_message);
+                new_error->next = error;
+                error = new_error;
+            }
+            else
+            {
+                // Add the name to the list, so that it can be compared later
+                ChainedList *new_param_name = create_chained_list((void *)param_name);
+                new_param_name->next = param_names;
+                param_names = new_param_name;
+            }
+
+            // Point to the next children
+            values = values->child[2];
+        }
+
+        free_chained_list(param_names);
+
+        symbol->params_data_type = params_types_start;
     }
 
     return error;
+}
+
+ChainedList *fill_global_types(AST *ast)
+{
+
+    ChainedList *error_list = NULL;
+
+    while (ast)
+    {
+        // Here we have, as *decl a node with type AST_DECLV_NOT_VECTOR
+        // or AST_DECLV_VECTOR or AST_FUNC
+        AST *decl = ast->child[0];
+        ChainedList *new_errors = NULL;
+
+        switch (decl->type)
+        {
+        case AST_DECLV_NOT_VECTOR:
+            new_errors = fill_global_types_declv_not_vector(decl);
+            break;
+        case AST_DECLV_VECTOR:
+            new_errors = fill_global_types_declv_vector(decl);
+            break;
+        case AST_FUNC:
+            new_errors = fill_global_types_func(decl);
+            break;
+        default:
+            fprintf(stdout, "NOT IMPLEMENTED fill_hash_table_types FOR THIS TYPE");
+            break;
+        }
+
+        // Append new_errors to the end of error_list
+        if (new_errors)
+        {
+            // Make curr_error, the last of the itens in the chainedList
+            ChainedList *curr_error = new_errors;
+            while (curr_error->next)
+            {
+                curr_error = curr_error->next;
+            }
+
+            curr_error->next = error_list;
+            error_list = new_errors;
+        }
+
+        // Go to the next LDECL node (which might be NULL, meaning the end of LDECLs)
+        ast = ast->child[1];
+    }
+
+    ChainedList *reversed_error_list = revert_chained_list(error_list);
+    return reversed_error_list;
 }
 
 /// Given an AST root, makes the semantic analysis.
@@ -264,7 +371,6 @@ ChainedList *fill_hash_table_types(AST *ast)
 ///     - Fill the hash table with the correct data and identifier types
 ///         (for redeclared types, it will use the first one to continue the analysis)
 ///     - Check for redeclarations
-///     - Check for usage without declaration
 ///     - Check for invalid variable initialization
 ///     - TODO MORE
 ///
@@ -273,6 +379,6 @@ ChainedList *fill_hash_table_types(AST *ast)
 /// @returns A ChainedList* with strings containing the errors which it found (can be null)
 ChainedList *get_semantic_errors(AST *ast)
 {
-    ChainedList *decl_errors = fill_hash_table_types(ast);
+    ChainedList *decl_errors = fill_global_types(ast);
     return decl_errors;
 }

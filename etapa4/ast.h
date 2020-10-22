@@ -51,11 +51,15 @@ enum
 typedef struct ast_node
 {
     int type;
-    int line_number;
     struct ast_node *child[MAX_CHILDREN];
     HASH_NODE *symbol;
+
     DATA_TYPE data_type;
     IDENTIFIER_TYPE id_type;
+
+    // Helper to know in which line of the source code this AST node is, to be able
+    // to print meaningful messages on semantic analysis
+    int line_number;
 } AST;
 
 AST *AST_create(int type, HASH_NODE *symbol, AST *s0, AST *s1, AST *s2, AST *s3, AST *s4);

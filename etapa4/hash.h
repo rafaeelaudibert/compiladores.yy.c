@@ -7,6 +7,7 @@
 
 #include "dataType.h"
 #include "identifierType.h"
+#include "chainedList.h"
 
 #define HASH_SIZE 997
 
@@ -18,6 +19,9 @@ typedef struct hash_node
 
     DATA_TYPE data_type;
     IDENTIFIER_TYPE identifier_type;
+
+    // Used if id_type is IT_FUNCTION, to know the order of the parameters types
+    ChainedList *params_data_type;
 } HASH_NODE;
 
 void hashInit(void);

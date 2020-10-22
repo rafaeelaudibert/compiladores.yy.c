@@ -2,9 +2,9 @@
 #include <stdlib.h>
 
 #include "lex.yy.h"
-#include "decompiler.h"
 #include "status.h"
 #include "semanticParser.h"
+#include "chainedList.h"
 
 // Fornecido pelo lexer em lex.yy.c
 extern char *yytext;
@@ -17,10 +17,9 @@ extern AST *ASTroot;
 
 void main(const int argc, const char **argv)
 {
-    FILE *outfile;
     initMe();
 
-    if (argc < 3)
+    if (argc < 2)
     {
         fprintf(stderr, "Call: %s input output\n", argv[0]);
         exit(STATUS_EXIT_NO_INPUT_FILE);
@@ -33,17 +32,8 @@ void main(const int argc, const char **argv)
         exit(STATUS_EXIT_INVALID_INPUT_FILE);
     }
 
-    outfile = fopen(argv[2], "w");
-    if (yyin == NULL)
-    {
-        fprintf(stderr, "Cannot open output file %s", argv[2]);
-        exit(STATUS_EXIT_INVALID_INPUT_FILE);
-    }
-
     // LEXER AND PARSER
     yyparse();
-    decompile(ASTroot, outfile);
-    // AST_print(ASTroot, 0);
 
     // SEMANTIC ANALYSIS
     ChainedList *semantic_errors = get_semantic_errors(ASTroot);

@@ -4,12 +4,11 @@ YACC=yacc
 
 FILENAME=etapa4
 
-${FILENAME}: lex.yy.o hash.o main.o y.tab.o ast.o decompiler.o dataType.o semanticParser.o
-	${CC} -o ${FILENAME} lex.yy.o hash.o y.tab.o ast.o decompiler.o dataType.o semanticParser.o
+${FILENAME}: lex.yy.o hash.o main.o y.tab.o ast.o dataType.o semanticParser.o chainedList.o
+	${CC} -o ${FILENAME} lex.yy.o hash.o y.tab.o ast.o dataType.o semanticParser.o chainedList.o
 main.o: main.c
 	${CC} -c main.c
-decompiler.o: decompiler.c
-	${CC} -c decompiler.c
+
 semanticParser.o: semanticParser.c
 	${CC} -c semanticParser.c
 
@@ -20,6 +19,8 @@ hash.o: hash.c
 	${CC} -c hash.c
 ast.o: ast.c
 	${CC} -c ast.c
+chainedList.o: chainedList.c
+	${CC} -c chainedList.c
 	
 
 lex.yy.o: lex.yy.c y.tab.o
@@ -33,9 +34,8 @@ y.tab.c: parser.y
 	${YACC} parser.y -d
 
 test: ${FILENAME} test/input.test
-	./${FILENAME} test/input.test test/output1.test
-	./${FILENAME} test/output1.test test/output2.test 
-	diff test/output1.test test/output2.test
+	- ./${FILENAME} test/input.test > test/output.test
+	diff test/expected.test test/output.test
 
 clean:
-	rm *.o lex.yy.c y.tab.* ${FILENAME} ${FILENAME}.tgz test/output*.test
+	- rm *.o lex.yy.c y.tab.* ${FILENAME} ${FILENAME}.tgz test/output*.test
