@@ -38,7 +38,7 @@ ChainedList *revert_chained_list(ChainedList *list)
     return before;
 }
 
-/// Frees entirely a ChainedList*, including the val inside of it
+/// Frees entirely a ChainedList*. It DOES NOT frees the val inside of it
 ///
 /// @param list A ChainedList* to be freed
 void free_chained_list(ChainedList *list)
@@ -47,7 +47,6 @@ void free_chained_list(ChainedList *list)
     while (list)
     {
         next = list->next;
-        free(list->val);
         free(list);
         list = next;
     }
