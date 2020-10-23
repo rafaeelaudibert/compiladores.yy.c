@@ -2,7 +2,7 @@
 
 
 incn (x = int, n = int, x = bool, k = char, n = float, j = bool, j=float) = int {
-  return x+n
+  return x+j
 };
 
 v1 = int[10]: 0 0 'C' 0 0 0.4F 0 FALSE TRUE; 

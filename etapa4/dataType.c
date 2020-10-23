@@ -41,3 +41,8 @@ inline int is_compatible(DATA_TYPE dt, DATA_TYPE other)
         return 0;
     }
 }
+
+inline int is_basic_data_type(DATA_TYPE dt)
+{
+    return dt < DT_ERRORS;
+}

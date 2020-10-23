@@ -1,5 +1,6 @@
 #include "semanticParser.h"
 #include "messages.h"
+#include "typeInfer.h"
 
 // @returns A fixed size buffer for error messages, with enough size
 char *create_error_message_buffer()
@@ -216,7 +217,7 @@ ChainedList *fill_global_types_func(AST *decl)
     DATA_TYPE symbol_data_type = symbol->data_type; // DT_NONE or DT_INT
     char *symbol_text = symbol->text;               // b
     int symbol_line = decl->child[0]->line_number;  // 3
-    int symbol_type = decl->child[2]->type;         // KW_INT
+    int symbol_type = decl->child[2]->symbol->type; // KW_INT
 
     // Check first for redeclarations
     if (symbol_data_type != DT_NONE)
@@ -389,10 +390,65 @@ ChainedList *get_type_errors_for_func(AST *func)
         func_params = func_params->child[2];
     }
 
+    // Iterate through the function body finding semantic inconsistences, marking the node types
+    AST *func_body = func->child[1];
+    AST *last_command = NULL;
+    while (func_body)
+    {
+        AST *command = func_body->child[0];
+        if (command)
+        {
+            int command_line = command->line_number;
+
+            DATA_TYPE dt = infer_type(command);
+            if (!is_basic_data_type(dt))
+            {
+                // Need to create a new error for this command
+                char *error_message = create_error_message_buffer();
+
+                switch (dt)
+                {
+                case DT_INVALID_IDENTIFIER_TYPE:
+                    sprintf(error_message, MESSAGE_INVALID_IDENTIFIER_TYPE, command_line);
+                    break;
+                case DT_UNDEFINED_SYMBOL:
+                    sprintf(error_message, MESSAGE_UNDEFINED_SYMBOL, command_line);
+                    break;
+                case DT_WRONG_INDEX_TYPE:
+                    sprintf(error_message, MESSAGE_WRONG_INDEX_TYPE, command_line);
+                    break;
+                case DT_NON_ARITHMETIC:
+                    sprintf(error_message, MESSAGE_NON_ARITHMETIC, command_line);
+                    break;
+                case DT_NON_BOOLEAN:
+                    sprintf(error_message, MESSAGE_NON_BOOLEAN, command_line);
+                    break;
+                case DT_INVALID_PARAMETER_QUANTITY:
+                    sprintf(error_message, MESSAGE_INVALID_PARAMETER_QUANTITY, command_line);
+                    break;
+                case DT_INVALID_PARAMETER_TYPE:
+                    sprintf(error_message, MESSAGE_INVALID_PARAMETER_TYPE, command_line);
+                    break;
+                case DT_INVALID_ATTRIBUTION:
+                    sprintf(error_message, MESSAGE_INVALID_ATTRIBUTION, command_line);
+                    break;
+                case DT_NOT_INFERED:
+                default:
+                    sprintf(error_message, MESSAGE_NOT_INFERED, dt, command_line);
+                    break;
+                }
+
+                ChainedList *new_error = create_chained_list((void *)error_message);
+                new_error->next = errors;
+                errors = new_error;
+            }
+        }
+
+        func_body = func_body->child[1];
+    }
+
     // TODO:
-    //      Iterate through the tree checking for correct types
-    //          Mark DT on AST nodes
-    //      Check the returned value is from the right type
+    //      Check that every returned value is from the right type
     //          find the return AST node
     //          check that the node DT is the same as the function return value
 
@@ -432,7 +488,7 @@ ChainedList *get_type_errors(AST *ast)
                 }
 
                 curr_error->next = type_errors;
-                type_errors = curr_error;
+                type_errors = func_errors;
             }
         }
 
@@ -440,7 +496,8 @@ ChainedList *get_type_errors(AST *ast)
         ast = ast->child[1];
     }
 
-    return type_errors;
+    ChainedList *reversed_error_list = revert_chained_list(type_errors);
+    return reversed_error_list;
 }
 
 /// Given an AST root, makes the semantic analysis.

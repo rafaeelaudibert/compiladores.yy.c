@@ -112,6 +112,6 @@ void hashPrint(void)
         printf("Hash: \n");
         for (int tableIdx = 0; tableIdx < HASH_SIZE; tableIdx++)
             for (node = table[tableIdx], list_idx = 0; node; node = node->next, list_idx++)
-                printf("Table[%d][%d] -> %s (Type %d)\n", tableIdx, list_idx, node->text, node->type);
+                printf("Table[%d][%d] -> %s (Type %d) (DataType %d)\n", tableIdx, list_idx, node->text, node->type, node->data_type);
     }
 }
