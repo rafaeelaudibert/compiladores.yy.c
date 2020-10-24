@@ -1,111 +1,19 @@
 Found some semantic errors!!
 
-Param x at line 4 already declared in this function before
-Param n at line 4 already declared in this function before
-Param j at line 4 already declared in this function before
-Identifier v1 at line 8 received incompatible initialization value FALSE
-Identifier v1 at line 8 received incompatible initialization value TRUE
-Identifier v1 at line 8 should receive 10 itens in initialization but received 9
-Identifier v1 at line 16 already declared before
-Identifier incn at line 54 already declared before
-Identifier b at line 129 already declared before
-Identifier c at line 131 already declared before
-Identifier a at line 132 already declared before
-Identifier i at line 133 already declared before
-Identifier f at line 134 already declared before
-Identifier v1 at line 135 already declared before
-Identifier mat at line 137 already declared before
-Identifier main at line 139 already declared before
-Identifier incn at line 174 already declared before
-Identifier main at line 179 already declared before
-Identifier b at line 195 already declared before
-Identifier c at line 197 already declared before
-Identifier a at line 198 already declared before
-Identifier i at line 199 already declared before
-Identifier f at line 200 already declared before
-Identifier v1 at line 201 already declared before
-Identifier mat at line 202 already declared before
-Identifier b at line 204 already declared before
-Identifier c at line 206 already declared before
-Identifier a at line 207 already declared before
-Identifier i at line 208 already declared before
-Identifier f at line 209 already declared before
-Identifier v1 at line 210 already declared before
-Identifier mat at line 211 already declared before
-Identifier incn at line 212 already declared before
-Identifier b at line 221 already declared before
-Identifier c at line 223 already declared before
-Identifier a at line 224 already declared before
-Identifier i at line 225 already declared before
-Identifier f at line 226 already declared before
-Identifier incn at line 229 already declared before
-Identifier main at line 244 already declared before
-Identifier main at line 259 already declared before
-Identifier incn at line 270 already declared before
-Identifier incn at line 291 already declared before
-The operation in line 6 requires only arithmetic operators
-The quantity of parameters passed to function at line 32 is wrong
-This type of identifier cannot be use at line 66
-This type of identifier cannot be use at line 68
-This symbol is not defined at line 68
-This symbol is not defined at line 70
-This symbol is not defined at line 71
-This symbol is not defined at line 73
-The operation in line 76 requires only arithmetic operators
-The operation in line 78 requires only boolean operators
-This symbol is not defined at line 83
-This symbol is not defined at line 90
-This symbol is not defined at line 100
-This symbol is not defined at line 105
-This symbol is not defined at line 108
-This symbol is not defined at line 109
-This symbol is not defined at line 110
-This symbol is not defined at line 111
-This symbol is not defined at line 112
-This symbol is not defined at line 113
-This symbol is not defined at line 114
-This symbol is not defined at line 115
-This symbol is not defined at line 116
-This symbol is not defined at line 117
-This symbol is not defined at line 118
-The operation in line 119 requires only boolean operators
-The operation in line 120 requires only boolean operators
-The operation in line 121 requires only arithmetic operators
-This symbol is not defined at line 122
-This symbol is not defined at line 123
-This symbol is not defined at line 124
-This symbol is not defined at line 126
-This symbol is not defined at line 127
-The quantity of parameters passed to function at line 152 is wrong
-The quantity of parameters passed to function at line 186 is wrong
-The quantity of parameters passed to function at line 187 is wrong
-The quantity of parameters passed to function at line 188 is wrong
-The quantity of parameters passed to function at line 189 is wrong
-The quantity of parameters passed to function at line 190 is wrong
-The quantity of parameters passed to function at line 191 is wrong
-The quantity of parameters passed to function at line 192 is wrong
-The quantity of parameters passed to function at line 193 is wrong
-The quantity of parameters passed to function at line 235 is wrong
-The quantity of parameters passed to function at line 240 is wrong
-The operation in line 256 requires only arithmetic operators
-This symbol is not defined at line 264
-This symbol is not defined at line 265
-This type of identifier cannot be use at line 274
-This type of identifier cannot be use at line 275
-This type of identifier cannot be use at line 276
-The quantity of parameters passed to function at line 297 is wrong
-The operation in line 302 requires only boolean operators
-The quantity of parameters passed to function at line 307 is wrong
-The operation in line 312 requires only arithmetic operators
-The operation in line 317 requires only boolean operators
-The quantity of parameters passed to function at line 322 is wrong
-The operation in line 327 requires only arithmetic operators
-The operation in line 332 requires only arithmetic operators
-The quantity of parameters passed to function at line 337 is wrong
-The operation in line 342 requires only boolean operators
-The operation in line 347 requires only boolean operators
-The operation in line 352 requires only arithmetic operators
-The operation in line 357 requires only arithmetic operators
-The operation in line 362 requires only arithmetic operators
-The operation in line 367 requires only arithmetic operators
-This symbol is not defined at line 387
+Identifier b at line 6 already declared before
+This symbol is not defined at line 20
+The return type at line 20 is not compatible to the function one
+This type of identifier cannot be used at line 31
+This type of identifier cannot be used at line 34
+This type of identifier cannot be used at line 38
+This type of identifier cannot be used at line 42
+The quantity of parameters passed to function at line 46 is wrong
+The quantity of parameters passed to function at line 49 is wrong
+The type of a parameter passed to function at line 50 is wrong
+The type of a parameter passed to function at line 53 is wrong
+An attribution at line 56 has invalid type
+The operation in line 60 requires only boolean operators
+The operation in line 61 requires only arithmetic operators
+The operation in line 63 requires only arithmetic operators
+The function at line 86 did not returned
+The function at line 86 did not returned in the last command

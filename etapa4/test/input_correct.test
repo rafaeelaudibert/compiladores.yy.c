@@ -1,9 +1,6 @@
 // UFRGS - Compiladores - Marcelo Johann - 2020/1
 
-
-incn (x = int, n = int) = int {
-  return x+n
-};
+// Sem redeclaração de variáveis ✔️
 
 b = bool : FALSE;
 
@@ -14,20 +11,60 @@ f = float: 0.0;
 v1 = int[10]: 0 0 0 0 0 0 0 0 0 0; 
 mat = int [ 10]; 
 
+// Sem variáveis não declaradas (aceita os parametros recebidos, com override de tipos) ✔️
+x = char : 'J';
+global = int : 5;
+incn (x = int, n = int) = int {
+  return x+n+global
+};
+
+
 main () = int
   {
+  // Escalares usados como escalares ✔️
   a = 5
+
+  // Vetor usado como vetor ✔️
   v1[a] = 55
-  print v1[55]
+  print v1['c']
 
-  print "Digite um numero: \n"
-  read a
-
+  // Função usada como função ✔️
   while (i<10)
-    {
+  {
     i = incn(i,1)
     a = incn(a,1)
-    }
+  }
+
+  // Verificação no lado esquerdo e direito ✔️
+  i = v1[5]
+  v1[5] = i
+  v1[0] = incn(i, 1)
+
+  // Verificar argumentos da chamada de função ✔️
+  i = checking_syntax_with_empty_params()
+  
+  b = checking_syntax_@(2.4B)
+
+  // Verificar argumentos com tipo compatível ✔️
+  b = checking_syntax_@(5)
+  b = checking_syntax_@('J')
+
+  // Verificar tipo de retorno de função (compatível) ✔️
+  i = checking_syntax_with_empty_params()
+
+  // Operadores lógicos somente com booleanos ✔️
+  if(TRUE | TRUE | FALSE | FALSE ^ FALSE) then
+    print "Digite um numero: \n"
+
+  // Operadores de comparação com aritméticos compatíveis ✔️
+  if (4 > 6) then print "F"
+  if (4.5 <= 'J') then print "T"
+
+  // Operadores de igualdade não precisam ser compatíveis ✔️
+  if (6 != FALSE) then print "T"
+  if (4.A == 213132312) then print "F"
+
+  read a
 
   print "Incrementado algumas vezes a fica " ,a ,"\n"
 
@@ -43,34 +80,22 @@ main () = int
 
   if (i==100) then 
     {
-    print "Nao tem como isso...\n"
+    // Retorna valor da função ✔️
+    return 4
     }
   else
     print "OK!\n"
-  };
 
   
-checking_syntax_with_empty_func() = float {
+  // Retorna valor no último comando ✔️  
+  return 5
+};
+
+  
+checking_syntax_with_empty_params() = float {
     return 4.4F
 };
 
-abcde_123 = int : 0;
-one_variable = int : 0;
-two_variables = char : 'c';
-the_other_one = float : 0.4F;
-
-a_block = char : 'A';
-with_assignments = char : 'W';
-another_block = char : 'A';
-
-another_block_v = int[5];
-inside = char : 'I';
-of_it = int : 5;
-with = char : 'C';
-string = char : 'S';
-the = float : .45BC;
-
-id = int : 5;
 
 checking_syntax_@(w = float) = bool {
   i = 5
@@ -116,3 +141,23 @@ checking_syntax_@(w = float) = bool {
 
   return (4 == 5)
 };
+
+// Hoisting ✔️
+
+abcde_123 = int : 0;
+one_variable = int : 0;
+two_variables = char : 'c';
+the_other_one = float : 0.4F;
+
+a_block = char : 'A';
+with_assignments = char : 'W';
+another_block = char : 'A';
+
+another_block_v = int[5];
+inside = char : 'I';
+of_it = int : 5;
+with = char : 'C';
+string = char : 'S';
+the = float : .45BC;
+
+id = int : 5;
