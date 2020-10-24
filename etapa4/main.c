@@ -21,7 +21,7 @@ void main(const int argc, const char **argv)
 
     if (argc < 2)
     {
-        fprintf(stderr, "Call: %s input output\n", argv[0]);
+        fprintf(stderr, "Call: %s input\n", argv[0]);
         exit(STATUS_EXIT_NO_INPUT_FILE);
     }
 
@@ -43,8 +43,7 @@ void main(const int argc, const char **argv)
         fprintf(stdout, "Found some semantic errors!!\n\n");
         do
         {
-            fprintf(stdout, (char *)semantic_errors->val);
-            fprintf(stdout, "\n");
+            fprintf(stdout, "%s\n", (char *)semantic_errors->val);
         } while (semantic_errors = semantic_errors->next);
 
         exit(STATUS_EXIT_SEMANTIC_ERROR);

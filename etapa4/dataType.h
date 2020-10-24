@@ -32,4 +32,7 @@ int is_string(DATA_TYPE dt);
 int is_compatible(DATA_TYPE dt, DATA_TYPE other);
 int is_basic_data_type(DATA_TYPE dt);
 
+DATA_TYPE map_lit_to_dt(int lit);
+DATA_TYPE map_kw_to_dt(int kw);
+
 #endif

@@ -30,11 +30,11 @@ typedef struct hash_node
     ChainedList *params_data_type;
 } HASH_NODE;
 
-void hashInit(void);
-void freeTable(void);
-int hashAddres(char *text);
-HASH_NODE *hashFind(char *text);
-HASH_NODE *hashInsert(char *text, int type);
-void hashPrint(void);
+void hash_init(void);
+void free_table(void);
+int hash_address(char *text);
+HASH_NODE *hash_find(char *text);
+HASH_NODE *hash_insert(char *text, int type);
+void hash_print(void);
 
 #endif

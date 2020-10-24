@@ -5,59 +5,10 @@
 // @returns A fixed size buffer for error messages, with enough size
 char *create_error_message_buffer()
 {
-    const int BUFFER_SIZE = 1024;
+    const int BUFFER_SIZE = 256;
 
-    char *buffer = (char *)malloc(1024 * sizeof(char));
+    char *buffer = (char *)malloc(BUFFER_SIZE * sizeof(char));
     return buffer;
-}
-
-DATA_TYPE map_lit_to_dt(int lit)
-{
-    DATA_TYPE mapped_dt = DT_NONE;
-    switch (lit)
-    {
-    case LIT_INTEGER:
-        mapped_dt = DT_INT;
-        break;
-    case LIT_FLOAT:
-        mapped_dt = DT_FLOAT;
-        break;
-    case LIT_CHAR:
-        mapped_dt = DT_CHAR;
-        break;
-    case LIT_TRUE:
-    case LIT_FALSE:
-        mapped_dt = DT_BOOL;
-        break;
-    default:
-        break;
-    }
-
-    return mapped_dt;
-}
-
-DATA_TYPE map_kw_to_dt(int kw)
-{
-    DATA_TYPE mapped_dt = DT_NONE;
-    switch (kw)
-    {
-    case KW_INT:
-        mapped_dt = DT_INT;
-        break;
-    case KW_FLOAT:
-        mapped_dt = DT_FLOAT;
-        break;
-    case KW_CHAR:
-        mapped_dt = DT_CHAR;
-        break;
-    case KW_BOOL:
-        mapped_dt = DT_BOOL;
-        break;
-    default:
-        break;
-    }
-
-    return mapped_dt;
 }
 
 ChainedList *fill_global_types_declv_not_vector(AST *decl)
@@ -265,11 +216,11 @@ ChainedList *fill_global_types_func(AST *decl)
             int initialized_value_kw = values->child[1]->symbol->type;   // KW_INT
             *mapped_initialized_dt = map_kw_to_dt(initialized_value_kw); // DT_INT
 
+            // Will be adding from the beginning to the end of the list 3->2->1
             ChainedList *new_param_type = create_chained_list((void *)mapped_initialized_dt);
             if (param_types_curr)
-            {
                 param_types_curr->next = new_param_type;
-            }
+
             param_types_curr = new_param_type;
             if (!params_types_start)
                 params_types_start = param_types_curr;
@@ -346,18 +297,7 @@ ChainedList *fill_global_types(AST *ast)
         }
 
         // Append new_errors to the end of error_list
-        if (new_errors)
-        {
-            // Make curr_error, the last of the itens in the chainedList
-            ChainedList *curr_error = new_errors;
-            while (curr_error->next)
-            {
-                curr_error = curr_error->next;
-            }
-
-            curr_error->next = error_list;
-            error_list = new_errors;
-        }
+        error_list = append_end(new_errors, error_list);
 
         // Go to the next LDECL node (which might be NULL, meaning the end of LDECLs)
         ast = ast->child[1];
@@ -382,9 +322,7 @@ ChainedList *get_type_errors_for_func(AST *func)
 
         // Use the first type, for the cases where it is being redeclared
         if (symbol->local_data_type == DT_NONE)
-        {
             symbol->local_data_type = type;
-        }
 
         // Go to the next parameter
         func_params = func_params->child[2];
@@ -393,9 +331,8 @@ ChainedList *get_type_errors_for_func(AST *func)
     DATA_TYPE func_return_type = func_header->child[0]->symbol->data_type;
 
     // Iterate through the function body finding semantic inconsistences, marking the node types
-    AST *func_body = func->child[1];
-    AST *last_command = NULL;
-    int returned = 0;
+    AST *func_body = func->child[1], *last_command = NULL;
+    int return_count = 0;
     while (func_body)
     {
         AST *command = func_body->child[0];
@@ -449,7 +386,7 @@ ChainedList *get_type_errors_for_func(AST *func)
 
             if (command->type == AST_RETURN)
             {
-                returned++;
+                return_count++;
                 if (!is_compatible(dt, func_return_type))
                 {
                     char *error_message = create_error_message_buffer();
@@ -465,7 +402,7 @@ ChainedList *get_type_errors_for_func(AST *func)
         func_body = func_body->child[1];
     }
 
-    if (!returned)
+    if (!return_count)
     {
         char *error_message = create_error_message_buffer();
         sprintf(error_message, MESSAGE_NOT_RETURN, func->line_number);
@@ -499,7 +436,11 @@ ChainedList *get_type_errors_for_func(AST *func)
     return errors;
 }
 
-/// TODO DOCS: Recursively iterate over the AST building the errors
+/// Recursively iterate over the AST building the errors
+///
+/// @param ast An AST to iter onto
+///
+/// @returns A ChainedList* of errors
 ChainedList *get_type_errors(AST *ast)
 {
 
@@ -511,18 +452,8 @@ ChainedList *get_type_errors(AST *ast)
         {
             ChainedList *func_errors = get_type_errors_for_func(node);
 
-            // Append to the end of type_errors
-            if (func_errors)
-            {
-                ChainedList *curr_error = func_errors;
-                while (curr_error->next)
-                {
-                    curr_error = curr_error->next;
-                }
-
-                curr_error->next = type_errors;
-                type_errors = func_errors;
-            }
+            // Append to the start of type_errors
+            type_errors = append_end(func_errors, type_errors);
         }
 
         // Go to the next LDECL
@@ -534,33 +465,16 @@ ChainedList *get_type_errors(AST *ast)
 }
 
 /// Given an AST root, makes the semantic analysis.
-/// It will:
-///     - Fill the hash table with the correct data and identifier types
-///         (for redeclared types, it will use the first one to continue the analysis)
-///     - Check for redeclarations
-///     - Check for invalid variable initialization
-///     - TODO MORE
 ///
 /// @param ast An AST root, which will be iterated
 ///
-/// @returns A ChainedList* with strings containing the errors which it found (can be null)
+/// @returns A ChainedList* with strings containing the errors which it found (can be NULL)
 ChainedList *get_semantic_errors(AST *ast)
 {
     ChainedList *decl_errors = fill_global_types(ast);
     ChainedList *type_errors = get_type_errors(ast);
 
-    if (!decl_errors)
-    {
-        return type_errors;
-    }
+    ChainedList *appended = append_end(decl_errors, type_errors);
 
-    // Go to the end of decl_errors, and append type_errors to return both of them
-    ChainedList *curr = decl_errors;
-    while (curr->next)
-    {
-        curr = curr->next;
-    }
-    curr->next = type_errors;
-
-    return decl_errors;
+    return appended;
 }

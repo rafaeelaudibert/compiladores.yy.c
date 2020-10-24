@@ -27,19 +27,19 @@ int getLineNumber(void) {
 
  /* Type keywords */
 "char"      {
-    yylval.symbol = hashInsert(yytext, KW_CHAR);
+    yylval.symbol = hash_insert(yytext, KW_CHAR);
     return KW_CHAR;
 }
 "int"       {
-    yylval.symbol = hashInsert(yytext, KW_INT);
+    yylval.symbol = hash_insert(yytext, KW_INT);
     return KW_INT;
 }
 "float"     {
-    yylval.symbol = hashInsert(yytext, KW_FLOAT);
+    yylval.symbol = hash_insert(yytext, KW_FLOAT);
     return KW_FLOAT;
 }
 "bool"      {
-    yylval.symbol = hashInsert(yytext, KW_BOOL);
+    yylval.symbol = hash_insert(yytext, KW_BOOL);
     return KW_BOOL;
 }
 
@@ -66,37 +66,37 @@ int getLineNumber(void) {
 
  /* Precedence for TRUE and FALSE constants instead of an identifier */
 "TRUE"                  {
-    yylval.symbol = hashInsert(yytext, LIT_TRUE);
+    yylval.symbol = hash_insert(yytext, LIT_TRUE);
     return LIT_TRUE;
 }
 "FALSE"                 {
-    yylval.symbol = hashInsert(yytext, LIT_FALSE);
+    yylval.symbol = hash_insert(yytext, LIT_FALSE);
     return LIT_FALSE;
 }
 
  /* Identifiers */
 [a-zA-Z@_][0-9a-zA-Z@_]*    {
-    yylval.symbol = hashInsert(yytext, TK_IDENTIFIER);
+    yylval.symbol = hash_insert(yytext, TK_IDENTIFIER);
     return TK_IDENTIFIER;
 }
 
  /* Integer and float literals (hexadecimal) */
 [A-F0-9]+               {
-    yylval.symbol = hashInsert(yytext, LIT_INTEGER);
+    yylval.symbol = hash_insert(yytext, LIT_INTEGER);
     return LIT_INTEGER;
 }
 [A-F0-9]*\.[A-F0-9]+    {
-    yylval.symbol = hashInsert(yytext, LIT_FLOAT);
+    yylval.symbol = hash_insert(yytext, LIT_FLOAT);
     return LIT_FLOAT;
 }
 
  /* Chars and Strings */
 '(\\.|[^'\n\t])'        { 
-    yylval.symbol = hashInsert(yytext, LIT_CHAR);
+    yylval.symbol = hash_insert(yytext, LIT_CHAR);
     return LIT_CHAR;
 }
 \"([^"\\\n]|\\.)*\"     {
-    yylval.symbol = hashInsert(yytext, LIT_STRING);
+    yylval.symbol = hash_insert(yytext, LIT_STRING);
     return LIT_STRING;
 }
 
@@ -125,7 +125,7 @@ int yywrap()
 void initMe(void)
 {
     // Initialize hash
-    hashInit();
+    hash_init();
 
     // Initialize variables
     is_running = TRUE;

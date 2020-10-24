@@ -2,15 +2,15 @@
 
 HASH_NODE **table = NULL;
 
-void hashInit(void)
+void hash_init(void)
 {
     if (table)
-        freeTable();
+        free_table();
 
     table = (HASH_NODE **)calloc(HASH_SIZE, sizeof(HASH_NODE *));
 }
 
-void freeTable(void)
+void free_table(void)
 {
     int table_idx, list_idx;
     HASH_NODE *node, *nextNode;
@@ -41,7 +41,7 @@ void freeTable(void)
     table = NULL;
 }
 
-int hashAddress(char *text)
+int hash_address(char *text)
 {
     int address = 1;
     int text_idx;
@@ -56,9 +56,9 @@ int hashAddress(char *text)
     return address - 1;
 }
 
-HASH_NODE *hashFind(char *text)
+HASH_NODE *hash_find(char *text)
 {
-    int address = hashAddress(text);
+    int address = hash_address(text);
     HASH_NODE *node = table[address];
 
     while (node)
@@ -72,9 +72,9 @@ HASH_NODE *hashFind(char *text)
     return NULL;
 }
 
-HASH_NODE *hashInsert(char *text, int type)
+HASH_NODE *hash_insert(char *text, int type)
 {
-    HASH_NODE *new_node = hashFind(text);
+    HASH_NODE *new_node = hash_find(text);
 
     if (!new_node)
     {
@@ -94,7 +94,7 @@ HASH_NODE *hashInsert(char *text, int type)
         new_node->identifier_type = DT_NONE;
         new_node->local_data_type = DT_NONE;
 
-        int address = hashAddress(text);
+        int address = hash_address(text);
         new_node->next = table[address];
         table[address] = new_node;
     }
@@ -102,7 +102,7 @@ HASH_NODE *hashInsert(char *text, int type)
     return new_node;
 }
 
-void hashPrint(void)
+void hash_print(void)
 {
     int table_idx, list_idx;
     HASH_NODE *node;

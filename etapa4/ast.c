@@ -28,14 +28,10 @@ AST *AST_create(int type, HASH_NODE *symbol, AST *s0, AST *s1, AST *s2, AST *s3,
 void AST_print(AST *node, int level)
 {
     if (!node)
-    {
         return;
-    }
 
     for (int i = 0; i < level; i++)
-    {
         printf("  ");
-    }
 
     switch (node->type)
     {
@@ -153,9 +149,7 @@ void AST_print(AST *node, int level)
     }
 
     if (node->symbol)
-    {
         printf("(%s)", node->symbol->text);
-    }
 
     printf("\n");
     for (int i = 0; i < MAX_CHILDREN; i++)

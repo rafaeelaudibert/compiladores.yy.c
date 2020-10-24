@@ -1,4 +1,5 @@
 #include "dataType.h"
+#include "lex.yy.h"
 
 inline int is_arithmetic(DATA_TYPE dt)
 {
@@ -38,11 +39,52 @@ inline int is_compatible(DATA_TYPE dt, DATA_TYPE other)
     case DT_STRING:
         return is_string(other);
     default:
-        return 0;
+        return FALSE;
     }
 }
 
 inline int is_basic_data_type(DATA_TYPE dt)
 {
     return dt < DT_ERRORS;
+}
+
+/// @param lit An integer representing a literal type (one of LIT_INTEGER, LIT_FLOAT, LIT_CHAR, LIT_TRUE, LIT_FALSE)
+///
+/// @returns A datatype corresponding to the [lit] mapping
+DATA_TYPE map_lit_to_dt(int lit)
+{
+    switch (lit)
+    {
+    case LIT_INTEGER:
+        return DT_INT;
+    case LIT_FLOAT:
+        return DT_FLOAT;
+    case LIT_CHAR:
+        return DT_CHAR;
+    case LIT_TRUE:
+    case LIT_FALSE:
+        return DT_BOOL;
+    }
+
+    return DT_NONE;
+}
+
+/// @param kw An integer representing a keyword (one of KW_INT, KW_FLOAT, KW_CHAR, KW_BOOL)
+///
+/// @returns A datatype corresponding to the [kw] mapping
+DATA_TYPE map_kw_to_dt(int kw)
+{
+    switch (kw)
+    {
+    case KW_INT:
+        return DT_INT;
+    case KW_FLOAT:
+        return DT_FLOAT;
+    case KW_CHAR:
+        return DT_CHAR;
+    case KW_BOOL:
+        return DT_BOOL;
+    }
+
+    return DT_NONE;
 }

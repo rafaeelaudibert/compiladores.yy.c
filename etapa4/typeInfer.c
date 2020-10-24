@@ -1,10 +1,22 @@
 #include "typeInfer.h"
 #include "lex.yy.h"
 
+#define ASSERT_BASIC_DATA_TYPE(x, error) \
+    if (!is_basic_data_type(x))          \
+    return error
+
+#define ASSERT_COMPATIBLE(a, b, error) \
+    if (!is_compatible(a, b))          \
+    return error
+
+#define ASSERT_ARITHMETIC(x, error) \
+    if (!is_arithmetic(x))          \
+    return error
+
 DATA_TYPE higher_type_for_arithmetic(DATA_TYPE left_op, DATA_TYPE right_op)
 {
-    if (!is_arithmetic(left_op) || !is_arithmetic(right_op))
-        return DT_NON_ARITHMETIC;
+    ASSERT_ARITHMETIC(left_op, DT_NON_ARITHMETIC);
+    ASSERT_ARITHMETIC(right_op, DT_NON_ARITHMETIC);
 
     if (is_float(left_op) || is_float(right_op))
         return DT_FLOAT;
@@ -36,9 +48,7 @@ DATA_TYPE infer_type_symbol(AST *node)
     }
 
     if (!symbol->local_data_type && !symbol->data_type)
-    {
         return DT_UNDEFINED_SYMBOL;
-    }
 
     // Important to notice that if it is local, then it is a scalar
     if (!symbol->local_data_type && symbol->identifier_type != IT_SCALAR)
@@ -54,16 +64,11 @@ DATA_TYPE infer_type_symbol_vector(AST *node)
 
     // Check for earlier error
     DATA_TYPE expression_dt = infer_type(expression_node);
-    if (!is_basic_data_type(expression_dt))
-    {
-        return expression_dt;
-    }
+    ASSERT_BASIC_DATA_TYPE(expression_dt, expression_dt);
 
     // This means that this was not defined
     if (!symbol_node->symbol->local_data_type && !symbol_node->symbol->data_type)
-    {
         return DT_UNDEFINED_SYMBOL;
-    }
 
     // Important to notice that if it is local, then it is a scalar
     if (symbol_node->symbol->local_data_type || symbol_node->symbol->identifier_type != IT_VECTOR)
@@ -71,9 +76,7 @@ DATA_TYPE infer_type_symbol_vector(AST *node)
 
     // This means there is an error when acessing it
     if (!is_integer(expression_dt))
-    {
         return DT_WRONG_INDEX_TYPE;
-    }
 
     // Valid type
     return symbol_node->symbol->local_data_type
@@ -85,16 +88,10 @@ DATA_TYPE infer_type_arithmetic(AST *node)
 {
     // First check if some of the early checkings already returned an error
     DATA_TYPE left_op = infer_type(node->child[0]);
-    if (!is_basic_data_type(left_op))
-    {
-        return left_op;
-    }
+    ASSERT_BASIC_DATA_TYPE(left_op, left_op);
 
     DATA_TYPE right_op = infer_type(node->child[1]);
-    if (!is_basic_data_type(right_op))
-    {
-        return right_op;
-    }
+    ASSERT_BASIC_DATA_TYPE(right_op, right_op);
 
     // Already checks for arithmetic values
     return higher_type_for_arithmetic(left_op, right_op);
@@ -104,44 +101,28 @@ DATA_TYPE infer_type_comparator(AST *node)
 {
     // First check if some of the early checkings already returned an error
     DATA_TYPE left_op = infer_type(node->child[0]);
-    if (!is_basic_data_type(left_op))
-    {
-        return left_op;
-    }
+    ASSERT_BASIC_DATA_TYPE(left_op, left_op);
 
     DATA_TYPE right_op = infer_type(node->child[1]);
-    if (!is_basic_data_type(right_op))
-    {
-        return right_op;
-    }
+    ASSERT_BASIC_DATA_TYPE(right_op, right_op);
 
-    if (is_arithmetic(left_op) && is_arithmetic(right_op))
-    {
-        return DT_BOOL;
-    }
+    ASSERT_ARITHMETIC(left_op, DT_NON_ARITHMETIC);
+    ASSERT_ARITHMETIC(right_op, DT_NON_ARITHMETIC);
 
-    return DT_NON_ARITHMETIC;
+    return DT_BOOL;
 }
 
 DATA_TYPE infer_type_boolean(AST *node)
 {
     // First check if some of the early checkings already returned an error
     DATA_TYPE left_op = infer_type(node->child[0]);
-    if (!is_basic_data_type(left_op))
-    {
-        return left_op;
-    }
+    ASSERT_BASIC_DATA_TYPE(left_op, left_op);
 
     DATA_TYPE right_op = infer_type(node->child[1]);
-    if (!is_basic_data_type(right_op))
-    {
-        return right_op;
-    }
+    ASSERT_BASIC_DATA_TYPE(right_op, right_op);
 
     if (is_boolean(left_op) && is_boolean(right_op))
-    {
         return DT_BOOL;
-    }
 
     return DT_NON_BOOLEAN;
 }
@@ -150,16 +131,10 @@ DATA_TYPE infer_type_comparison(AST *node)
 {
     // First check if some of the early checkings already returned an error
     DATA_TYPE left_op = infer_type(node->child[0]);
-    if (!is_basic_data_type(left_op))
-    {
-        return left_op;
-    }
+    ASSERT_BASIC_DATA_TYPE(left_op, left_op);
 
     DATA_TYPE right_op = infer_type(node->child[1]);
-    if (!is_basic_data_type(right_op))
-    {
-        return right_op;
-    }
+    ASSERT_BASIC_DATA_TYPE(right_op, right_op);
 
     return DT_BOOL;
 }
@@ -171,8 +146,7 @@ DATA_TYPE infer_type_lcommand(AST *node)
     {
         // The only problem with this, is that we will only check for the first problem inside the block
         DATA_TYPE command_dt = infer_type(command->child[0]);
-        if (!is_basic_data_type(command_dt))
-            return command_dt;
+        ASSERT_BASIC_DATA_TYPE(command_dt, command_dt);
 
         command = command->child[1];
     }
@@ -184,8 +158,7 @@ DATA_TYPE infer_type_boolean_block(AST *node)
 {
     AST *expr = node->child[0];
     DATA_TYPE expr_dt = infer_type(expr);
-    if (!is_basic_data_type(expr_dt))
-        return expr_dt;
+    ASSERT_BASIC_DATA_TYPE(expr_dt, expr_dt);
 
     if (!is_boolean(expr_dt))
         return DT_NON_BOOLEAN;
@@ -200,8 +173,7 @@ DATA_TYPE infer_type_boolean_block(AST *node)
             break;
 
         DATA_TYPE command_dt = infer_type(command);
-        if (!is_basic_data_type(command_dt))
-            return command_dt;
+        ASSERT_BASIC_DATA_TYPE(command_dt, command_dt);
 
         command = command->child[1];
     }
@@ -273,34 +245,22 @@ DATA_TYPE infer_type_unary_minus(AST *node)
 {
     // First check if some of the early checkings already returned an error
     DATA_TYPE op = infer_type(node->child[0]);
-    if (!is_basic_data_type(op))
-    {
-        return op;
-    }
+    ASSERT_BASIC_DATA_TYPE(op, op);
+    ASSERT_ARITHMETIC(op, DT_NON_ARITHMETIC);
 
-    if (is_arithmetic(op))
-    {
-        return op;
-    }
-
-    return DT_NON_ARITHMETIC;
+    return op;
 }
 
 DATA_TYPE infer_type_unary_negation(AST *node)
 {
     // First check if some of the early checkings already returned an error
     DATA_TYPE op = infer_type(node->child[0]);
-    if (!is_basic_data_type(op))
-    {
-        return op;
-    }
+    ASSERT_BASIC_DATA_TYPE(op, op);
 
     if (is_boolean(op))
-    {
         return op;
-    }
 
-    return DT_NON_ARITHMETIC;
+    return DT_NON_BOOLEAN;
 }
 
 DATA_TYPE infer_type_func_call(AST *node)
@@ -308,15 +268,11 @@ DATA_TYPE infer_type_func_call(AST *node)
     HASH_NODE *symbol = node->child[0]->symbol;
 
     if (!symbol->data_type)
-    {
         return DT_UNDEFINED_SYMBOL;
-    }
 
     // If it is local, then it is a scalar
     if (symbol->local_data_type || symbol->identifier_type != IT_FUNCTION)
-    {
         return DT_INVALID_IDENTIFIER_TYPE;
-    }
 
     ChainedList *params = symbol->params_data_type;
     AST *param_list = node->child[1];
@@ -324,26 +280,17 @@ DATA_TYPE infer_type_func_call(AST *node)
     while (params && param_list)
     {
         DATA_TYPE expression_type = infer_type(param_list->child[0]);
-        if (!is_basic_data_type(expression_type))
-        {
-            return expression_type;
-        }
+        ASSERT_BASIC_DATA_TYPE(expression_type, expression_type);
 
         DATA_TYPE *param_type = (DATA_TYPE *)params->val;
-
-        if (!is_compatible(*param_type, expression_type))
-        {
-            return DT_INVALID_PARAMETER_TYPE;
-        }
+        ASSERT_COMPATIBLE(*param_type, expression_type, DT_INVALID_PARAMETER_TYPE);
 
         params = params->next;
         param_list = param_list->child[1];
     }
 
     if (param_list || params)
-    {
         return DT_INVALID_PARAMETER_QUANTITY;
-    }
 
     return symbol->data_type;
 }
@@ -354,28 +301,19 @@ DATA_TYPE infer_type_attrib(AST *node)
 
     AST *attrib_expression = node->child[1];
     DATA_TYPE attrib_expression_type = infer_type(attrib_expression);
-    if (!is_basic_data_type(attrib_expression_type))
-    {
-        return attrib_expression_type;
-    }
+    ASSERT_BASIC_DATA_TYPE(attrib_expression_type, attrib_expression_type);
 
     // This means that this was not defined
     if (!symbol->local_data_type && !symbol->data_type)
-    {
         return DT_UNDEFINED_SYMBOL;
-    }
 
     // If it is local, then it is a scalar
     if (!symbol->local_data_type && !symbol->identifier_type == IT_SCALAR)
-    {
         return DT_INVALID_IDENTIFIER_TYPE;
-    }
 
     DATA_TYPE dt = symbol->local_data_type ? symbol->local_data_type : symbol->data_type;
     if (is_compatible(attrib_expression_type, dt))
-    {
         return dt;
-    }
 
     return DT_INVALID_ATTRIBUTION;
 }
@@ -386,19 +324,15 @@ DATA_TYPE infer_type_attrib_vec(AST *node)
 
     AST *indexing_expression = node->child[1];
     DATA_TYPE indexing_expression_type = infer_type(indexing_expression);
-    if (!is_basic_data_type(indexing_expression_type))
-        return indexing_expression_type;
+    ASSERT_BASIC_DATA_TYPE(indexing_expression_type, indexing_expression_type);
 
     AST *attrib_expression = node->child[2];
     DATA_TYPE attrib_expression_type = infer_type(attrib_expression);
-    if (!is_basic_data_type(attrib_expression_type))
-        return attrib_expression_type;
+    ASSERT_BASIC_DATA_TYPE(attrib_expression_type, attrib_expression_type);
 
     // This means that this was not defined
     if (!symbol->local_data_type && !symbol->data_type)
-    {
         return DT_UNDEFINED_SYMBOL;
-    }
 
     // If it is local, then it is a scalar
     if (symbol->local_data_type || symbol->identifier_type != IT_VECTOR)
@@ -406,9 +340,7 @@ DATA_TYPE infer_type_attrib_vec(AST *node)
 
     DATA_TYPE dt = symbol->local_data_type ? symbol->local_data_type : symbol->data_type;
     if (is_compatible(attrib_expression_type, dt))
-    {
         return dt;
-    }
 
     return DT_INVALID_ATTRIBUTION;
 }
@@ -432,8 +364,7 @@ DATA_TYPE infer_type_print(AST *node)
     {
         AST *expr = params->child[0];
         DATA_TYPE expr_dt = infer_type(expr);
-        if (!is_basic_data_type(expr_dt))
-            return expr_dt;
+        ASSERT_BASIC_DATA_TYPE(expr_dt, expr_dt);
 
         params = params->child[1];
     }
@@ -460,40 +391,27 @@ DATA_TYPE infer_type_loop(AST *node)
 {
     AST *identifier = node->child[0];
     DATA_TYPE identifier_dt = infer_type(identifier);
-    if (!is_basic_data_type(identifier_dt))
-        return identifier_dt;
-
-    if (!is_arithmetic(identifier_dt))
-        return DT_NON_ARITHMETIC;
+    ASSERT_BASIC_DATA_TYPE(identifier_dt, identifier_dt);
+    ASSERT_ARITHMETIC(identifier_dt, DT_NON_ARITHMETIC);
 
     AST *identifier_expr = node->child[1];
     DATA_TYPE identifier_expr_dt = infer_type(identifier_expr);
-    if (!is_basic_data_type(identifier_expr_dt))
-        return identifier_expr_dt;
-
-    if (!is_arithmetic(identifier_expr_dt))
-        return DT_NON_ARITHMETIC;
+    ASSERT_BASIC_DATA_TYPE(identifier_expr_dt, identifier_expr_dt);
+    ASSERT_ARITHMETIC(identifier_expr_dt, DT_NON_ARITHMETIC);
 
     AST *condition_expr = node->child[2];
     DATA_TYPE condition_expr_dt = infer_type(condition_expr);
-    if (!is_basic_data_type(condition_expr_dt))
-        return condition_expr_dt;
-
-    if (!is_arithmetic(condition_expr_dt))
-        return DT_NON_ARITHMETIC;
+    ASSERT_BASIC_DATA_TYPE(condition_expr_dt, condition_expr_dt);
+    ASSERT_ARITHMETIC(condition_expr_dt, DT_NON_ARITHMETIC);
 
     AST *loop_expr = node->child[3];
     DATA_TYPE loop_expr_dt = infer_type(loop_expr);
-    if (!is_basic_data_type(loop_expr_dt))
-        return loop_expr_dt;
-
-    if (!is_arithmetic(loop_expr_dt))
-        return DT_NON_ARITHMETIC;
+    ASSERT_BASIC_DATA_TYPE(loop_expr_dt, loop_expr_dt);
+    ASSERT_ARITHMETIC(loop_expr_dt, DT_NON_ARITHMETIC);
 
     AST *command = node->child[4];
     DATA_TYPE command_dt = infer_type(command);
-    if (!is_basic_data_type(command_dt))
-        return command_dt;
+    ASSERT_BASIC_DATA_TYPE(command_dt, command_dt);
 
     return DT_NONE;
 }
