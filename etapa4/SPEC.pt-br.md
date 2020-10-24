@@ -54,7 +54,7 @@ d. **Argumentos e parâmetros** – A lista de argumentos deve ser verificada co
   * não pode haver menos argumentos ✔️
   * não pode haver mais argumentos ✔️
   * os tipos devem ser compatíveis (não iguais, lembre-se) ✔️
-* verificar tipo do valor de retorno da função
+* verificar tipo do valor de retorno da função ✔️
 * verificar índices dos vetores (não pode ser booleano, não pode ser float), tanto na expressão quanto na atribuição ✔️
 
 #### Controle e organização do seu código fonte

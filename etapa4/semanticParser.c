@@ -390,14 +390,18 @@ ChainedList *get_type_errors_for_func(AST *func)
         func_params = func_params->child[2];
     }
 
+    DATA_TYPE func_return_type = func_header->child[0]->symbol->data_type;
+
     // Iterate through the function body finding semantic inconsistences, marking the node types
     AST *func_body = func->child[1];
     AST *last_command = NULL;
+    int returned = 0;
     while (func_body)
     {
         AST *command = func_body->child[0];
         if (command)
         {
+            last_command = command;
             int command_line = command->line_number;
 
             DATA_TYPE dt = infer_type(command);
@@ -442,15 +446,44 @@ ChainedList *get_type_errors_for_func(AST *func)
                 new_error->next = errors;
                 errors = new_error;
             }
+
+            if (command->type == AST_RETURN)
+            {
+                returned++;
+                if (!is_compatible(dt, func_return_type))
+                {
+                    char *error_message = create_error_message_buffer();
+                    sprintf(error_message, MESSAGE_WRONG_RETURN_TYPE, command_line);
+
+                    ChainedList *new_error = create_chained_list((void *)error_message);
+                    new_error->next = errors;
+                    errors = new_error;
+                }
+            }
         }
 
         func_body = func_body->child[1];
     }
 
-    // TODO:
-    //      Check that every returned value is from the right type
-    //          find the return AST node
-    //          check that the node DT is the same as the function return value
+    if (!returned)
+    {
+        char *error_message = create_error_message_buffer();
+        sprintf(error_message, MESSAGE_NOT_RETURN, func->line_number);
+
+        ChainedList *new_error = create_chained_list((void *)error_message);
+        new_error->next = errors;
+        errors = new_error;
+    }
+
+    if (last_command->type != AST_RETURN)
+    {
+        char *error_message = create_error_message_buffer();
+        sprintf(error_message, MESSAGE_NOT_LAST_COMMAND_RETURN, func->line_number);
+
+        ChainedList *new_error = create_chained_list((void *)error_message);
+        new_error->next = errors;
+        errors = new_error;
+    }
 
     // Remove the local types from the hashTable
     func_params = func_header->child[1];

@@ -17,7 +17,7 @@ const char *MESSAGE_WRONG_NUMBER_ITENS_VECTOR = "Identifier %s at line %d should
 const char *MESSAGE_NOT_INFERED = "Could not infer type (error %d) at line %d";
 
 // Ex: This type of identifier cannot be used at line 15
-const char *MESSAGE_INVALID_IDENTIFIER_TYPE = "This type of identifier cannot be use at line %d";
+const char *MESSAGE_INVALID_IDENTIFIER_TYPE = "This type of identifier cannot be used at line %d";
 
 // Ex: This symbol is not defined at line 15
 const char *MESSAGE_UNDEFINED_SYMBOL = "This symbol is not defined at line %d";
@@ -39,5 +39,14 @@ const char *MESSAGE_INVALID_PARAMETER_TYPE = "The type of a parameter passed to 
 
 // Ex: An attribution at line 15 has invalid type
 const char *MESSAGE_INVALID_ATTRIBUTION = "An attribution at line %d has invalid type";
+
+// Ex: The return type at line 15 is not compatible to the function one
+const char *MESSAGE_WRONG_RETURN_TYPE = "The return type at line %d is not compatible to the function one";
+
+// Ex: The function at line 15 did not returned
+const char *MESSAGE_NOT_RETURN = "The function at line %d did not returned";
+
+// Ex: The function at line 15 did not returned in the last command
+const char *MESSAGE_NOT_LAST_COMMAND_RETURN = "The function at line %d did not returned in the last command";
 
 #endif
