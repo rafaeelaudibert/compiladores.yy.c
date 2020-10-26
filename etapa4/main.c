@@ -15,7 +15,7 @@ extern int yylex();
 extern int yyparse();
 extern AST *ASTroot;
 
-void main(const int argc, const char **argv)
+int main(const int argc, const char **argv)
 {
     initMe();
 
@@ -44,7 +44,7 @@ void main(const int argc, const char **argv)
         do
         {
             fprintf(stdout, "%s\n", (char *)semantic_errors->val);
-        } while (semantic_errors = semantic_errors->next);
+        } while ((semantic_errors = semantic_errors->next));
 
         exit(STATUS_EXIT_SEMANTIC_ERROR);
     }

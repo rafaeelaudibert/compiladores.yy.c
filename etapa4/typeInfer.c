@@ -308,7 +308,7 @@ DATA_TYPE infer_type_attrib(AST *node)
         return DT_UNDEFINED_SYMBOL;
 
     // If it is local, then it is a scalar
-    if (!symbol->local_data_type && !symbol->identifier_type == IT_SCALAR)
+    if (!symbol->local_data_type && symbol->identifier_type != IT_SCALAR)
         return DT_INVALID_IDENTIFIER_TYPE;
 
     DATA_TYPE dt = symbol->local_data_type ? symbol->local_data_type : symbol->data_type;

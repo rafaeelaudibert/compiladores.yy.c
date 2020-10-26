@@ -12,27 +12,26 @@ void hash_init(void)
 
 void free_table(void)
 {
-    int table_idx, list_idx;
-    HASH_NODE *node, *nextNode;
+    HASH_NODE *node, *next_node;
 
     // For each position in the table
-    for (int tableIdx = 0; tableIdx < HASH_SIZE; tableIdx++)
+    for (int table_idx = 0; table_idx < HASH_SIZE; table_idx++)
     {
         // Get the pointer in the current position
-        node = table[tableIdx];
+        node = table[table_idx];
 
         // While pointing at something that is not NULL
         while (node)
         {
             // Save the next
-            nextNode = node->next;
+            next_node = node->next;
 
             // Free the text, and the node itself
             free(node->text);
             free(node);
 
             // Now we will look for the next
-            node = nextNode;
+            node = next_node;
         }
     }
 
@@ -104,14 +103,20 @@ HASH_NODE *hash_insert(char *text, int type)
 
 void hash_print(void)
 {
-    int table_idx, list_idx;
+    int list_idx;
     HASH_NODE *node;
 
     if (table)
     {
         printf("Hash: \n");
-        for (int tableIdx = 0; tableIdx < HASH_SIZE; tableIdx++)
-            for (node = table[tableIdx], list_idx = 0; node; node = node->next, list_idx++)
-                printf("Table[%d][%d] -> %s (Type %d) (DataType %d)\n", tableIdx, list_idx, node->text, node->type, node->data_type);
+        for (int table_idx = 0; table_idx < HASH_SIZE; table_idx++)
+            for (node = table[table_idx], list_idx = 0; node; node = node->next, list_idx++)
+                printf(
+                    "Table[%d][%d] -> %s (Type %d) (DataType %d)\n",
+                    table_idx,
+                    list_idx,
+                    node->text,
+                    node->type,
+                    node->data_type);
     }
 }
