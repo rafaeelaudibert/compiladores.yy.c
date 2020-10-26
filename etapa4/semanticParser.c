@@ -331,14 +331,12 @@ ChainedList *get_type_errors_for_func(AST *func)
     DATA_TYPE func_return_type = func_header->child[0]->symbol->data_type;
 
     // Iterate through the function body finding semantic inconsistences, marking the node types
-    AST *func_body = func->child[1], *last_command = NULL;
-    int return_count = 0;
+    AST *func_body = func->child[1];
     while (func_body)
     {
         AST *command = func_body->child[0];
         if (command)
         {
-            last_command = command;
             int command_line = command->line_number;
 
             DATA_TYPE dt = infer_type(command);
@@ -386,7 +384,6 @@ ChainedList *get_type_errors_for_func(AST *func)
 
             if (command->type == AST_RETURN)
             {
-                return_count++;
                 if (!is_compatible(dt, func_return_type))
                 {
                     char *error_message = create_error_message_buffer();
@@ -400,26 +397,6 @@ ChainedList *get_type_errors_for_func(AST *func)
         }
 
         func_body = func_body->child[1];
-    }
-
-    if (!return_count)
-    {
-        char *error_message = create_error_message_buffer();
-        sprintf(error_message, MESSAGE_NOT_RETURN, func->line_number);
-
-        ChainedList *new_error = create_chained_list((void *)error_message);
-        new_error->next = errors;
-        errors = new_error;
-    }
-
-    if (last_command->type != AST_RETURN)
-    {
-        char *error_message = create_error_message_buffer();
-        sprintf(error_message, MESSAGE_NOT_LAST_COMMAND_RETURN, func->line_number);
-
-        ChainedList *new_error = create_chained_list((void *)error_message);
-        new_error->next = errors;
-        errors = new_error;
     }
 
     // Remove the local types from the hashTable

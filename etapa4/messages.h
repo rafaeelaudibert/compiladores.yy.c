@@ -43,10 +43,4 @@ const char *MESSAGE_INVALID_ATTRIBUTION = "An attribution at line %d has invalid
 // Ex: The return type at line 15 is not compatible to the function one
 const char *MESSAGE_WRONG_RETURN_TYPE = "The return type at line %d is not compatible to the function one";
 
-// Ex: The function at line 15 did not returned
-const char *MESSAGE_NOT_RETURN = "The function at line %d did not returned";
-
-// Ex: The function at line 15 did not returned in the last command
-const char *MESSAGE_NOT_LAST_COMMAND_RETURN = "The function at line %d did not returned in the last command";
-
 #endif
