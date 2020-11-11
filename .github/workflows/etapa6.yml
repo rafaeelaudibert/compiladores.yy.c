@@ -1,0 +1,17 @@
+name: Etapa6
+on:
+  push:
+    branches:
+      - master
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: etapa6
+    steps:
+    - uses: actions/checkout@v1
+    - name: Compilation
+      run: make clean || make
+    - name: Run tests
+      run: make test
