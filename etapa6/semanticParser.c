@@ -76,11 +76,11 @@ ChainedList *fill_global_types_declv_vector(AST *decl)
     ChainedList *error = NULL;
 
     HASH_NODE *symbol = decl->child[0]->symbol;
-    DATA_TYPE symbol_data_type = symbol->data_type;     // DT_NONE or DT_INT
-    char *symbol_text = symbol->text;                   // v1
-    int symbol_line = decl->child[0]->line_number;      // 5
-    int symbol_type = decl->child[1]->symbol->type;     // KW_INT
-    int qty_itens = atoi(decl->child[2]->symbol->text); // 10
+    DATA_TYPE symbol_data_type = symbol->data_type;                 // DT_NONE or DT_INT
+    char *symbol_text = symbol->text;                               // v1
+    int symbol_line = decl->child[0]->line_number;                  // 5
+    int symbol_type = decl->child[1]->symbol->type;                 // KW_INT
+    int qty_itens = strtol(decl->child[2]->symbol->text, NULL, 16); // 10
 
     // Check first for redeclarations
     if (symbol_data_type != DT_NONE)
