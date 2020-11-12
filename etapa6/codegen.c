@@ -151,13 +151,15 @@ TAC *generate_loop(TAC *symbol, TAC *initializer, TAC *expr, TAC *step, TAC *bod
     // TACs for the comparation, and its jump if false. We don't use the
     // `generate_boolean_arithmetic_operator` because it will add symbol to the
     // TAC again, causing an infinite loop
-    TAC *tac_comparator = tac_create(TAC_LT, RES_OR_NULL(symbol), RES_OR_NULL(expr), NULL);
+    TAC *tac_comparator = tac_create(TAC_LT, make_temp(), RES_OR_NULL(symbol), RES_OR_NULL(expr));
 
     TAC *tac_comparator_with_jump = tac_join(
         tac_label_cmp,
         tac_join(
-            tac_comparator,
-            GENERATE_COND_JUMP(tac_label_after, tac_comparator)));
+            expr,
+            tac_join(
+                tac_comparator,
+                GENERATE_COND_JUMP(tac_label_after, tac_comparator))));
 
     // TACs for the body with incrementation, and jump to the beginning
     // Note that we dont use `generate_boolean_arithmetic_operator` here, as we add the value
