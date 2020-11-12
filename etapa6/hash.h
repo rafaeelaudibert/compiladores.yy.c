@@ -11,6 +11,9 @@
 
 #define HASH_SIZE 997
 
+#define TYPE_TMP 2001
+#define TYPE_LBL 2002
+
 typedef struct hash_node
 {
     int type;
@@ -19,6 +22,9 @@ typedef struct hash_node
 
     DATA_TYPE data_type;
     IDENTIFIER_TYPE identifier_type;
+
+    // Init values
+    ChainedList *init_values;
 
     // This is used in the local scope, so that we have a easy lookup table
     // for parameter declarations in functions
@@ -40,4 +46,8 @@ void hash_print(void);
 HASH_NODE *make_temp();
 HASH_NODE *make_label();
 
+void add_init_value(HASH_NODE *node, HASH_NODE *value_node);
+void hash_generate_global_ASM(FILE *);
+
+char *escaped_string(char *str);
 #endif

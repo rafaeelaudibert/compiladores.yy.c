@@ -44,8 +44,10 @@ y.tab.c: parser.y
 	${YACC} parser.y -d
 
 test: ${FILENAME} test/input.test test/expected.test
-	./${FILENAME} test/input.test > test/output.test
-	diff test/expected.test test/output.test
+	./${FILENAME} test/input.test
+	gcc out.s -o test/output.exe
+	./test/output.exe > test/output.test
+	diff test/output.test test/expected.test
 
 clean:
-	- rm *.o lex.yy.c y.tab.* ${FILENAME} ${FILENAME}.tgz test/output*.test *.s
+	- rm *.o lex.yy.c y.tab.* ${FILENAME} ${FILENAME}.tgz test/output.* *.s

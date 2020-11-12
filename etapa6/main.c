@@ -52,10 +52,11 @@ int main(const int argc, const char **argv)
         exit(STATUS_EXIT_SEMANTIC_ERROR);
     }
 
+    // Gera os TACS
     TAC *tac = generate_code(ASTroot);
     TAC *tac_reversed = tac_reverse(tac);
-    tac_print_recursive(tac_reversed);
 
+    // Gera assembly
     generate_ASM(tac_reversed);
 
     fprintf(stdout, "Succesful Compilation!\n");

@@ -1,4 +1,14 @@
 #include "hash.h"
+#include <ctype.h>
+
+// We need to redefine, so that we don't have a redeclaration loop
+const int TK_IDENTIFIER = 274;
+const int LIT_INTEGER = 275;
+const int LIT_FLOAT = 276;
+const int LIT_FALSE = 277;
+const int LIT_TRUE = 278;
+const int LIT_CHAR = 279;
+const int LIT_STRING = 280;
 
 HASH_NODE **table = NULL;
 
@@ -82,6 +92,8 @@ HASH_NODE *hash_insert(char *text, int type)
         new_node->text = (char *)calloc(strlen(text) + 1, sizeof(char));
         strcpy(new_node->text, text);
 
+        new_node->init_values = NULL;
+
         // Filled later by the Semantic Analysis, to easily
         // verify if we:
         //      * redeclared an identifier
@@ -90,7 +102,7 @@ HASH_NODE *hash_insert(char *text, int type)
         //      * used an identifier with its type (int, float, char, bool)
         //      * declared it as a parameter in the local scope, with a different type
         new_node->data_type = DT_NONE;
-        new_node->identifier_type = DT_NONE;
+        new_node->identifier_type = IT_NONE;
         new_node->local_data_type = DT_NONE;
 
         int address = hash_address(text);
@@ -121,6 +133,56 @@ void hash_print(void)
     }
 }
 
+void add_init_value(HASH_NODE *node, HASH_NODE *value_node)
+{
+
+    char *value = (char *)malloc(64 * sizeof(char));
+    if (value_node->type == LIT_INTEGER)
+    {
+        sprintf(value, "0x%s", value_node->text);
+    }
+    else if (value_node->type == LIT_FLOAT)
+    {
+        // TODO: SEE HOW TO DEAL WITH FLOATS
+        sprintf(value, "0x0");
+    }
+    else if (value_node->type == LIT_CHAR)
+    {
+        // value_node->text is already on the format with single quotes: 'c'
+        sprintf(value, value_node->text);
+    }
+    else if (value_node->type == LIT_FALSE)
+    {
+        // FALSE is 0
+        sprintf(value, "0x0");
+    }
+    else if (value_node->type == LIT_TRUE)
+    {
+        // TRUE is 1
+        sprintf(value, "0x1");
+    }
+    else if (value_node->type == TYPE_TMP)
+    {
+        // Temporary are 0 by default
+        sprintf(value, "0x0");
+    }
+
+    ChainedList *this_value = create_chained_list(value);
+    if (!node->init_values)
+    {
+        node->init_values = this_value;
+    }
+    else
+    {
+        ChainedList *val = node->init_values;
+        while (val->next)
+        {
+            val = val->next;
+        }
+        val->next = this_value;
+    }
+}
+
 HASH_NODE *make_temp()
 {
     static unsigned int counter = 1;
@@ -128,7 +190,10 @@ HASH_NODE *make_temp()
 
     sprintf(buffer, "$temp_%u", counter++);
 
-    return hash_insert(buffer, 0);
+    HASH_NODE *node = hash_insert(buffer, TYPE_TMP);
+    add_init_value(node, node); // We pass itself
+
+    return node;
 }
 
 HASH_NODE *make_label()
@@ -138,5 +203,93 @@ HASH_NODE *make_label()
 
     sprintf(buffer, "$label_%u", counter++);
 
-    return hash_insert(buffer, 0);
+    return hash_insert(buffer, TYPE_LBL);
+}
+
+char *escaped_string(char *str)
+{
+    char *buffer = (char *)calloc(255, sizeof(char));
+
+    strncpy(buffer, str, 253 * sizeof(char));
+
+    int size = 'z' - 'a';
+    int i = 0;
+    for (; buffer[i]; i++)
+    {
+        if (isspace((unsigned char)buffer[i]))
+        {
+            buffer[i] = '_';
+        }
+        else if (
+            (buffer[i] < 'a' || buffer[i] > 'z') &&
+            (buffer[i] < 'A' || buffer[i] > 'Z') &&
+            buffer[i] != '_')
+        {
+            buffer[i] = (buffer[i] % size) + 'a';
+        }
+    }
+
+    // Removes the last char
+    buffer[i - 1] = '\0';
+
+    return buffer + 1;
+}
+
+char *explicit_slash_0(char *str)
+{
+    int len = strlen(str);
+    char *buffer = (char *)calloc(len + 5, sizeof(char));
+
+    strncpy(buffer, str, (len + 5) * sizeof(char));
+
+    // Adds a \0 at the end
+    buffer[len - 1] = '\\';
+    buffer[len] = '0';
+    buffer[len + 1] = '"';
+
+    return buffer;
+}
+
+void hash_generate_global_ASM(FILE *fout)
+{
+    if (table)
+    {
+        fprintf(fout, "\n");
+        for (int table_idx = 0; table_idx < HASH_SIZE; table_idx++)
+            for (HASH_NODE *node = table[table_idx]; node; node = node->next)
+            {
+                if (node->init_values)
+                {
+                    fprintf(fout, "_%s: \n", node->text);
+                    for (ChainedList *init_val = node->init_values; init_val; init_val = init_val->next)
+                    {
+                        fprintf(fout, "\t.long\t%s\n", (char *)init_val->val);
+                    }
+                }
+                else if (node->type == TK_IDENTIFIER && node->identifier_type != IT_FUNCTION)
+                {
+                    // Local variable
+                    fprintf(fout, "_%s: \n\t.long\t0x0\n", node->text);
+                }
+                else if (node->data_type == DT_STRING || node->type == LIT_STRING)
+                {
+                    char *escaped_str = escaped_string(node->text);
+                    char *str_with_0 = explicit_slash_0(node->text);
+                    fprintf(
+                        fout,
+                        "__%s_string_r4nd0m: \n"
+                        "\t.ascii\t%s\n",
+                        escaped_str,
+                        str_with_0);
+                }
+                else if (node->type == TYPE_TMP)
+                {
+                    fprintf(
+                        fout,
+                        "_%s: \n"
+                        "\t.long\t0x0\n",
+                        node->text);
+                }
+            }
+    }
 }

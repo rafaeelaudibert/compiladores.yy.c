@@ -1,163 +1,25 @@
-// UFRGS - Compiladores - Marcelo Johann - 2020/1
+vec = int[2] : 1 1;
+tmp = int : 0;
 
-// Sem redeclaração de variáveis ✔️
-
-b = bool : FALSE;
-
-c = char : 'x';
-a = int: 0;
-i = int: 0;
-f = float: 0.0;
-v1 = int[10]: 0 0 0 0 0 0 0 0 0 0; 
-mat = int [ 10]; 
-
-// Sem variáveis não declaradas (aceita os parametros recebidos, com override de tipos) ✔️
-x = char : 'J';
-global = int : 5;
-incn (x = int, n = int) = int {
-  return x+n+global
-};
-
+i = int : 0;
+fib = int : 2E; // 46 in decimal
 
 main () = int
-  {
-  // Escalares usados como escalares ✔️
-  a = 5
+{
+    print vec[0]
+    if (fib <= 1) then
+      return 0
 
-  // Vetor usado como vetor ✔️
-  v1[a] = 55
-  print v1['c']
+    print vec[1]
+    if (fib <= 2) then
+      return 0
+    
 
-  // Função usada como função ✔️
-  while (i<10)
-  {
-    i = incn(i,1)
-    a = incn(a,1)
-  }
-
-  // Verificação no lado esquerdo e direito ✔️
-  i = v1[5]
-  v1[5] = i
-  v1[0] = incn(i, 1)
-
-  // Verificar argumentos da chamada de função ✔️
-  i = checking_syntax_with_empty_params()
-  
-  b = checking_syntax_@(2.4B)
-
-  // Verificar argumentos com tipo compatível ✔️
-  b = checking_syntax_@(5)
-  b = checking_syntax_@('J')
-
-  // Verificar tipo de retorno de função (compatível) ✔️
-  i = checking_syntax_with_empty_params()
-
-  // Operadores lógicos somente com booleanos ✔️
-  if(TRUE | TRUE | FALSE | FALSE ^ FALSE) then
-    print "Digite um numero: \n"
-
-  // Operadores de comparação com aritméticos compatíveis ✔️
-  if (4 > 6) then print "F"
-  if (4.5 <= 'J') then print "T"
-
-  // Operadores de igualdade não precisam ser compatíveis ✔️
-  if (6 != FALSE) then print "T"
-  if (4.A == 213132312) then print "F"
-
-  read a
-
-  print "Incrementado algumas vezes a fica " ,a ,"\n"
-
-  loop (i:1,10,1)
-    print "."
-  print "\n"
-
-  if (a==15) then 
-    print "A=15\n"
-
-  if ( a==15 | a!=17 ) then
-    print "A igual a 15 ou 17\n"
-
-  if (i==100) then 
-    {
-    // Retorna valor da função ✔️
-    return 4
+    loop (i:3,fib + 1,1) {
+      tmp = vec[0] + vec[1]
+      vec[0] = vec[1]
+      vec[1] = tmp
+      print vec[1]
     }
-  else
-    print "OK!\n"
-
-  
-  // Retorna valor no último comando ✔️  
-  return 5
 };
 
-  
-checking_syntax_with_empty_params() = float {
-    return 4.4F
-};
-
-
-checking_syntax_@(w = float) = bool {
-  i = 5
-
-  read abcde_123
-  print one_variable
-  print two_variables, the_other_one
-  print with, "a", string, "in", the, "middle"
-
-  if ( (5 == (5 + (6 - 6))) == TRUE ) then
-    print "wat"
-
-  if ((5 == 6) | ((3 + ((2 - 4) + 5) * (14 / (2) ))) == 4) then print "a lot of parenthesis"
-
-  if ( 3 != 4 ) then {
-      i = a_block
-      i = with_assignments
-  } else {
-      another_block = with_assignments
-  }
-
-  { 
-      print "a_block"
-      {
-          another_block_v[inside] = of_it
-      }
-  }
-
-  i = 6
-  while (i < 10) {
-      i = i + 1
-      print "I is ", i
-      {
-          print "inside another block"
-      }
-      i = main()
-  }
-
-  loop(id:1, 5 + 5, 3)
-    print id, " without a block"
-
-  if (5 > 6) then else print "abcde", "jki", 'c'
-
-  return (4 == 5)
-};
-
-// Hoisting ✔️
-
-abcde_123 = int : 0;
-one_variable = int : 0;
-two_variables = char : 'c';
-the_other_one = float : 0.4F;
-
-a_block = char : 'A';
-with_assignments = char : 'W';
-another_block = char : 'A';
-
-another_block_v = int[5];
-inside = char : 'I';
-of_it = int : 5;
-with = char : 'C';
-string = char : 'S';
-the = float : .45BC;
-
-id = int : 5;

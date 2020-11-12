@@ -18,9 +18,41 @@ AST *AST_create(int type, HASH_NODE *symbol, AST *s0, AST *s1, AST *s2, AST *s3,
     node->data_type = DT_NONE;
     node->id_type = IT_NONE;
 
-    // This has some problems with '\n's, but is it not a huge problems,
+    // This has some problems with '\n's, but is it not a huge problem,
     // as it is mainly for debugging purposes (semantic analysis error messages)
     node->line_number = getLineNumber();
+
+    // Fill hash table with initialization value, if it is a declaration
+    if (node->type == AST_DECLV_NOT_VECTOR)
+    {
+        add_init_value(node->child[0]->symbol, node->child[2]->symbol);
+    }
+    else if (node->type == AST_DECLV_VECTOR)
+    {
+        if (node->child[3] != NULL)
+        {
+            AST *current = node->child[3];
+            while (current)
+            {
+                add_init_value(node->child[0]->symbol, current->child[0]->symbol);
+                current = current->child[1];
+            }
+        }
+        else
+        {
+            // Not declared vector, we initialize with 0, because yes
+            HASH_NODE *node_0 = hash_insert("0", LIT_INTEGER);
+            for (int i = 0; i < strtol(node->child[2]->symbol->text, NULL, 16); i++)
+            {
+                add_init_value(node->child[0]->symbol, node_0);
+            }
+        }
+    }
+    else if (node->type == AST_SYMBOL && node->symbol->identifier_type == IT_SCALAR)
+    {
+        // If we have a symbol, we add an initial value of itself
+        add_init_value(node->symbol, node->symbol);
+    }
 
     return node;
 }
