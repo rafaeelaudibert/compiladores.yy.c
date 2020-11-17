@@ -6,14 +6,15 @@ fib = int : 2E; // 46 in decimal
 
 main () = int
 {
+    // Comparing with TRUE to test literals
     print vec[0]
-    if (fib <= 1) then
+    if (fib <= 1 ^ TRUE) then
       return 0
 
+    // Comparing with ~FALSE to test literals
     print vec[1]
-    if (fib <= 2) then
-      return 0
-    
+    if (fib <= 2 ^ ~FALSE) then
+      return 0    
 
     loop (i:3,fib + 1,1) {
       tmp = vec[0] + vec[1]
