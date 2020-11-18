@@ -7,6 +7,8 @@
 #define MOVL_ABSOLUTE_OR_VARIABLE_TO_EBX(op) IS_ABSOLUTE(op) ? "\tmovl\t$0x%s, %%ebx\n" : "\tmovl\t_%s, %%ebx\n"
 #define PARSE_BOOLEAN_TO_STRING(op) op->type == LIT_TRUE ? "1" : (op->type == LIT_FALSE ? "0" : op->text)
 
+ChainedList *func_current_param = NULL, *func_param_start = NULL;
+
 void generate_ASM(TAC *tac)
 {
     FILE *fout = fopen("out.s", "w");
@@ -31,6 +33,45 @@ void generate_ASM(TAC *tac)
                     "\t# TAC_LABEL\n"
                     "_%s:\n",
                     tac->res->text);
+            break;
+        case TAC_FUNC_PARAM_FUNC_NAME:
+            // Doesn't generate code, only sets the neccessary data
+            func_current_param = tac->res->params_names;
+            func_param_start = tac->res->params_names;
+            break;
+        case TAC_FUNC_PARAM:
+            fprintf(fout,
+                    "\t# TAC_FUNC_PARAM\n"
+                    "\tpushl\t_%s\n",
+                    (char *)func_current_param->val);
+            fprintf(fout, MOVL_ABSOLUTE_OR_VARIABLE_TO_EAX(tac->op1), PARSE_BOOLEAN_TO_STRING(tac->op1));
+            fprintf(fout, "\tmovl\t%%eax, _%s\n\n", (char *)func_current_param->val);
+
+            // Advances so that it can be used by the next parameter
+            func_current_param = func_current_param->next;
+            break;
+        case TAC_FUNC_CALL:
+            fprintf(fout,
+                    "\t# TAC_FUNC_CALL\n"
+                    "\tcall\t_%s\n"
+                    "\tmovl\t%%eax, _%s\n",
+                    tac->op1->text,
+                    tac->res->text);
+
+            // Pops the pushed elements, in reverse order
+            func_param_start = revert_chained_list(func_param_start);
+            func_current_param = func_param_start;
+
+            while (func_current_param)
+            {
+                fprintf(fout, "\tpopl\t_%s\n", (char *)func_current_param->val);
+                func_current_param = func_current_param->next;
+            }
+            fprintf(fout, "\n");
+
+            // Needs to revert it back so that it can be used later
+            // as `revert_chained_list` deletes the list
+            func_param_start = revert_chained_list(func_param_start);
             break;
         case TAC_VECTOR_ACCESS:
             fprintf(fout,

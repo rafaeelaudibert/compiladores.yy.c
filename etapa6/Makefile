@@ -1,7 +1,7 @@
 CC=gcc
 LEX=flex
 YACC=yacc
-FLAGS=-Wall -O2
+FLAGS=-Wall -O2 -g
 
 FILENAME=etapa6
 
@@ -46,8 +46,30 @@ y.tab.c: parser.y
 test: ${FILENAME} test/input.test test/expected.test
 	./${FILENAME} test/input.test
 	gcc out.s -o test/output.exe
-	./test/output.exe > test/output.test
+	- ./test/output.exe > test/output.test
 	diff test/output.test test/expected.test
+
+test_all:  ${FILENAME} test/input.test test/expected.test
+	./${FILENAME} test/input.test
+	gcc out.s -o test/output.exe
+	- ./test/output.exe > test/output.test
+	diff test/output.test test/expected.test
+	echo "Teste básico ✔️"
+	./${FILENAME} test/fatorial_input.test
+	gcc out.s -o test/output.exe
+	- ./test/output.exe > test/output.test
+	diff test/output.test test/fatorial_expected.test
+	echo "Teste fatorial ✔️"
+	./${FILENAME} test/iterative_fib_input.test
+	gcc out.s -o test/output.exe
+	- ./test/output.exe > test/output.test
+	diff test/output.test test/iterative_fib_expected.test
+	echo "Teste fibonacci iterativo ✔️"
+	./${FILENAME} test/recursive_fib_input.test
+	gcc out.s -o test/output.exe
+	- ./test/output.exe > test/output.test
+	diff test/output.test test/recursive_fib_expected.test
+	echo "Teste fibonacci recursivo ✔️"
 
 clean:
 	- rm *.o lex.yy.c y.tab.* ${FILENAME} ${FILENAME}.tgz test/output.* *.s

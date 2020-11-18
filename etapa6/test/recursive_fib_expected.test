@@ -1,0 +1,97 @@
+fib
+computing fib ->
+1
+1
+computing fib ->
+2
+1
+computing fib ->
+3
+2
+computing fib ->
+4
+3
+computing fib ->
+5
+5
+computing fib ->
+6
+8
+computing fib ->
+7
+13
+computing fib ->
+8
+21
+computing fib ->
+9
+34
+computing fib ->
+10
+55
+computing fib ->
+11
+89
+computing fib ->
+12
+144
+computing fib ->
+13
+233
+computing fib ->
+14
+377
+computing fib ->
+15
+610
+computing fib ->
+16
+987
+computing fib ->
+17
+1597
+computing fib ->
+18
+2584
+computing fib ->
+19
+4181
+computing fib ->
+20
+6765
+computing fib ->
+21
+10946
+computing fib ->
+22
+17711
+computing fib ->
+23
+28657
+computing fib ->
+24
+46368
+computing fib ->
+25
+75025
+computing fib ->
+26
+121393
+computing fib ->
+27
+196418
+computing fib ->
+28
+317811
+computing fib ->
+29
+514229
+computing fib ->
+30
+832040
+computing fib ->
+31
+1346269
+computing fib ->
+32
+2178309

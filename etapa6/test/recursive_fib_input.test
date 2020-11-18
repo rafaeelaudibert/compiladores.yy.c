@@ -1,0 +1,24 @@
+i = int : 0;
+max_fib = int : 20;
+
+fib(n = int, tmp1=int, tmp2=int) = int {
+  if (n <= 2) then
+    return 1
+
+
+  tmp1 = fib(n - 1, 0, 0)
+  tmp2 = fib(n - 2, 0, 0)
+
+  return tmp1 + tmp2
+};
+
+main () = int
+{
+    print "fib"
+    
+    loop (i:1,max_fib + 1,1) {
+      print "computing fib ->", i
+      print fib(i, 0, 0)
+    }
+};
+

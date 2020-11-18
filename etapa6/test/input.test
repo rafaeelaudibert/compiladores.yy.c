@@ -1,26 +1,26 @@
-vec = int[2] : 1 1;
-tmp = int : 0;
-
 i = int : 0;
-fib = int : 2E; // 46 in decimal
+x = int[10];
 
-main () = int
-{
-    // Comparing with TRUE to test literals
-    print vec[0]
-    if (fib <= 1 ^ TRUE) then
-      return 0
-
-    // Comparing with ~FALSE to test literals
-    print vec[1]
-    if (fib <= 2 ^ ~FALSE) then
-      return 0    
-
-    loop (i:3,fib + 1,1) {
-      tmp = vec[0] + vec[1]
-      vec[0] = vec[1]
-      vec[1] = tmp
-      print vec[1]
-    }
+funcao_top_com_param(n=int)=int {
+    print "aqui no parametro", n
 };
 
+funcao_com_valor_retorno()=int {
+    return 2A
+};
+
+main() = int {
+    print "Minha funçãozinha!"
+
+    if (6 > 5 ^ x[0] == 0) then
+        print "vou printar isso"
+
+    print "chamando funcao com parametro"
+    x[3] = funcao_top_com_param(0BC4)
+
+    loop(i:1,20,3)
+        if (i / 2 > 6) then 
+            print "loop", i
+
+    print "A resposta é", funcao_com_valor_retorno()  
+};

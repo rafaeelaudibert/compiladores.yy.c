@@ -1,0 +1,17 @@
+i = int : 0;
+max_factorial = int : 0B; // More than 12 doesn't fit in an integer
+
+fatorial(n=int) = int {
+  if (n <= 1) then
+    return 1
+
+  return n * fatorial(n - 1)
+};
+
+main () = int
+{    
+    loop (i:1,max_factorial + 1,1) {
+      print "Fatorial de i", i, fatorial(i), "\n"
+    }
+};
+
