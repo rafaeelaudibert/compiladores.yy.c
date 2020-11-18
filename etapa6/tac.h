@@ -33,6 +33,7 @@ typedef enum
     TAC_UNARY_NEGATION,
 
     TAC_FUNC_CALL,
+    TAC_FUNC_PARAM_FUNC_NAME,
     TAC_FUNC_PARAM,
 
     TAC_ATTRIB,

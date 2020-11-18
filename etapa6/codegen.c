@@ -50,11 +50,12 @@ TAC *generate_unary_operator(TAC_TYPE type, TAC *op)
     return tac_join(op, operation);
 }
 
-TAC *generate_func_call(TAC *name, TAC *body)
+TAC *generate_func_call(TAC *name, TAC *params)
 {
     TAC *func_call = tac_create(TAC_FUNC_CALL, make_temp(), RES_OR_NULL(name), NULL);
+    TAC *func_params_func_name = tac_create(TAC_FUNC_PARAM_FUNC_NAME, RES_OR_NULL(name), NULL, NULL);
 
-    return tac_join(body, func_call);
+    return tac_join(func_params_func_name, tac_join(params, func_call));
 }
 
 TAC *generate_func_param(TAC *expression, TAC *other_param)

@@ -113,6 +113,10 @@ void tac_print(TAC *tac)
     case TAC_UNARY_NEGATION:
         printf("TAC_UNARY_NEGATION");
         break;
+
+    case TAC_FUNC_PARAM_FUNC_NAME:
+        printf("TAC_FUNC_PARAM_FUNC_NAME");
+        break;
     case TAC_FUNC_CALL:
         printf("TAC_FUNC_CALL");
         break;

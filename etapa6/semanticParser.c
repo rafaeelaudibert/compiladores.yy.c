@@ -260,9 +260,8 @@ ChainedList *fill_global_types_func(AST *decl)
             values = values->child[2];
         }
 
-        free_chained_list(param_names);
-
         symbol->params_data_type = params_types_start;
+        symbol->params_names = revert_chained_list(param_names);
     }
 
     return error;

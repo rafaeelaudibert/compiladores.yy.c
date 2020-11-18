@@ -32,8 +32,9 @@ typedef struct hash_node
     // and returned to DT_NONE when leaving its body
     DATA_TYPE local_data_type;
 
-    // Used if id_type is IT_FUNCTION, to know the order of the parameters types
+    // Used if id_type is IT_FUNCTION, to know the order of the parameters types and the names of it
     ChainedList *params_data_type;
+    ChainedList *params_names;
 } HASH_NODE;
 
 void hash_init(void);
