@@ -3,8 +3,8 @@
 #include "lex.yy.h"
 
 #define IS_ABSOLUTE(op) op->type != TK_IDENTIFIER && op->type != TYPE_TMP
-#define MOVL_ABSOLUTE_OR_VARIABLE_TO_EAX(op) IS_ABSOLUTE(op) ? "\tmovl\t$%s, %%eax\n" : "\tmovl\t_%s, %%eax\n"
-#define MOVL_ABSOLUTE_OR_VARIABLE_TO_EBX(op) IS_ABSOLUTE(op) ? "\tmovl\t$%s, %%edx\n" : "\tmovl\t_%s, %%ebx\n"
+#define MOVL_ABSOLUTE_OR_VARIABLE_TO_EAX(op) IS_ABSOLUTE(op) ? "\tmovl\t$0x%s, %%eax\n" : "\tmovl\t_%s, %%eax\n"
+#define MOVL_ABSOLUTE_OR_VARIABLE_TO_EBX(op) IS_ABSOLUTE(op) ? "\tmovl\t$0x%s, %%ebx\n" : "\tmovl\t_%s, %%ebx\n"
 #define PARSE_BOOLEAN_TO_STRING(op) op->type == LIT_TRUE ? "1" : (op->type == LIT_FALSE ? "0" : op->text)
 
 void generate_ASM(TAC *tac)
@@ -44,8 +44,8 @@ void generate_ASM(TAC *tac)
         case TAC_COPY:
             fprintf(fout, "\t# TAC_COPY\n");
 
-            fprintf(fout, MOVL_ABSOLUTE_OR_VARIABLE_TO_EAX(tac->op1), tac->op1->text);
-            fprintf(fout, "\tmovl\t%%eax, _%s", tac->res->text);
+            fprintf(fout, MOVL_ABSOLUTE_OR_VARIABLE_TO_EAX(tac->op1), PARSE_BOOLEAN_TO_STRING(tac->op1));
+            fprintf(fout, "\tmovl\t%%eax, _%s\n\n", tac->res->text);
 
             break;
         case TAC_COPY_IDX:
@@ -88,8 +88,8 @@ void generate_ASM(TAC *tac)
         case TAC_SUB:
             fprintf(fout, "\t# TAC_SUB\n");
 
-            fprintf(fout, MOVL_ABSOLUTE_OR_VARIABLE_TO_EBX(tac->op1), tac->op1->text);
-            fprintf(fout, MOVL_ABSOLUTE_OR_VARIABLE_TO_EAX(tac->op2), tac->op2->text);
+            fprintf(fout, MOVL_ABSOLUTE_OR_VARIABLE_TO_EBX(tac->op2), tac->op2->text);
+            fprintf(fout, MOVL_ABSOLUTE_OR_VARIABLE_TO_EAX(tac->op1), tac->op1->text);
             fprintf(fout,
                     "\tsubl\t%%ebx, %%eax\n"
                     "\tmovl\t%%eax, _%s\n\n",
@@ -121,7 +121,7 @@ void generate_ASM(TAC *tac)
 
             fprintf(fout, MOVL_ABSOLUTE_OR_VARIABLE_TO_EAX(tac->op2), tac->op2->text);
             fprintf(fout,
-                    IS_ABSOLUTE(tac->op1) ? "\tcmpl\t$%s, %%eax\n" : "\tcmpl\t_%s, %%eax\n",
+                    IS_ABSOLUTE(tac->op1) ? "\tcmpl\t$0x%s, %%eax\n" : "\tcmpl\t_%s, %%eax\n",
                     tac->op1->text);
             fprintf(fout,
                     "\tsetg\t%%al\n"
@@ -134,7 +134,7 @@ void generate_ASM(TAC *tac)
 
             fprintf(fout, MOVL_ABSOLUTE_OR_VARIABLE_TO_EAX(tac->op1), tac->op1->text);
             fprintf(fout,
-                    IS_ABSOLUTE(tac->op2) ? "\tcmpl\t$%s, %%eax\n" : "\tcmpl\t_%s, %%eax\n",
+                    IS_ABSOLUTE(tac->op2) ? "\tcmpl\t$0x%s, %%eax\n" : "\tcmpl\t_%s, %%eax\n",
                     tac->op2->text);
             fprintf(fout,
                     "\tsetle\t%%al\n"
@@ -147,7 +147,7 @@ void generate_ASM(TAC *tac)
 
             fprintf(fout, MOVL_ABSOLUTE_OR_VARIABLE_TO_EAX(tac->op1), tac->op1->text);
             fprintf(fout,
-                    IS_ABSOLUTE(tac->op2) ? "\tcmpl\t$%s, %%eax\n" : "\tcmpl\t_%s, %%eax\n",
+                    IS_ABSOLUTE(tac->op2) ? "\tcmpl\t$0x%s, %%eax\n" : "\tcmpl\t_%s, %%eax\n",
                     tac->op2->text);
             fprintf(fout,
                     "\tsetg\t%%al\n"
@@ -160,7 +160,7 @@ void generate_ASM(TAC *tac)
 
             fprintf(fout, MOVL_ABSOLUTE_OR_VARIABLE_TO_EAX(tac->op2), tac->op2->text);
             fprintf(fout,
-                    IS_ABSOLUTE(tac->op1) ? "\tcmpl\t$%s, %%eax\n" : "\tcmpl\t_%s, %%eax\n",
+                    IS_ABSOLUTE(tac->op1) ? "\tcmpl\t$0x%s, %%eax\n" : "\tcmpl\t_%s, %%eax\n",
                     tac->op1->text);
             fprintf(fout,
                     "\tsetle\t%%al\n"
@@ -169,14 +169,13 @@ void generate_ASM(TAC *tac)
                     tac->res->text);
             break;
         case TAC_OR:
-
             fprintf(fout, "\t# TAC_OR\n");
 
             fprintf(fout,
-                    IS_ABSOLUTE(tac->op1) ? "\tmov\t$%s, %%al\n" : "\tmov\t_%s, %%al\n",
+                    IS_ABSOLUTE(tac->op1) ? "\tmov\t$0x%s, %%al\n" : "\tmov\t_%s, %%al\n",
                     PARSE_BOOLEAN_TO_STRING(tac->op1));
             fprintf(fout,
-                    IS_ABSOLUTE(tac->op2) ? "\tmov\t$%s, %%bl\n" : "\tmov\t_%s, %%bl\n",
+                    IS_ABSOLUTE(tac->op2) ? "\tmov\t$0x%s, %%bl\n" : "\tmov\t_%s, %%bl\n",
                     PARSE_BOOLEAN_TO_STRING(tac->op2));
             fprintf(fout, "\tor\t%%bl, %%al\n"); // al = al || bl
             fprintf(fout, "\tmov\t%%al, _%s\n\n", tac->res->text);
@@ -185,10 +184,10 @@ void generate_ASM(TAC *tac)
             fprintf(fout, "\t# TAC_AND\n");
 
             fprintf(fout,
-                    IS_ABSOLUTE(tac->op1) ? "\tmov\t$%s, %%al\n" : "\tmov\t_%s, %%al\n",
+                    IS_ABSOLUTE(tac->op1) ? "\tmov\t$0x%s, %%al\n" : "\tmov\t_%s, %%al\n",
                     PARSE_BOOLEAN_TO_STRING(tac->op1));
             fprintf(fout,
-                    IS_ABSOLUTE(tac->op2) ? "\tmov\t$%s, %%bl\n" : "\tmov\t_%s, %%bl\n",
+                    IS_ABSOLUTE(tac->op2) ? "\tmov\t$0x%s, %%bl\n" : "\tmov\t_%s, %%bl\n",
                     PARSE_BOOLEAN_TO_STRING(tac->op2));
             fprintf(fout, "\tand\t%%bl, %%al\n"); // al = al && bl
             fprintf(fout, "\tmov\t%%al, _%s\n\n", tac->res->text);
@@ -196,8 +195,8 @@ void generate_ASM(TAC *tac)
         case TAC_EQ:
             fprintf(fout, "\t# TAC_EQ\n");
 
-            fprintf(fout, MOVL_ABSOLUTE_OR_VARIABLE_TO_EAX(tac->op1), tac->op1->text);
-            fprintf(fout, MOVL_ABSOLUTE_OR_VARIABLE_TO_EBX(tac->op2), tac->op2->text);
+            fprintf(fout, MOVL_ABSOLUTE_OR_VARIABLE_TO_EAX(tac->op1), PARSE_BOOLEAN_TO_STRING(tac->op1));
+            fprintf(fout, MOVL_ABSOLUTE_OR_VARIABLE_TO_EBX(tac->op2), PARSE_BOOLEAN_TO_STRING(tac->op2));
             fprintf(fout,
                     "\tcmpl\t%%eax, %%ebx\n"
                     "\tsete\t%%al\n"
@@ -231,7 +230,7 @@ void generate_ASM(TAC *tac)
 
             // Negating a boolean, is the same as bool (xor) 1
             fprintf(fout,
-                    IS_ABSOLUTE(tac->op1) ? "\tmov\t$%s, %%al\n" : "\tmov\t_%s, %%al\n",
+                    IS_ABSOLUTE(tac->op1) ? "\tmov\t$0x%s, %%al\n" : "\tmov\t_%s, %%al\n",
                     PARSE_BOOLEAN_TO_STRING(tac->op1));
             fprintf(fout,
                     "\tmov\t$1, %%bl\n"
@@ -255,8 +254,10 @@ void generate_ASM(TAC *tac)
         case TAC_RETURN:
             fprintf(fout, "\t# TAC_RETURN\n");
 
-            fprintf(fout, MOVL_ABSOLUTE_OR_VARIABLE_TO_EAX(tac->op1), tac->op1->text);
-            fprintf(fout, "\tret\n\n");
+            fprintf(fout, MOVL_ABSOLUTE_OR_VARIABLE_TO_EAX(tac->op1), PARSE_BOOLEAN_TO_STRING(tac->op1));
+            fprintf(fout,
+                    "\tleave\n"
+                    "\tret\n\n");
             break;
         case TAC_PRINT:
             fprintf(fout, "\t# TAC_PRINT\n");
@@ -276,7 +277,7 @@ void generate_ASM(TAC *tac)
             }
             else if (tac->op1->type != TK_IDENTIFIER && tac->op1->type != TYPE_TMP)
             {
-                fprintf(fout, "\tmovl\t$%d, %%eax\n", (int)strtol(tac->op1->text, NULL, 16));
+                fprintf(fout, "\tmovl\t$0x%d, %%eax\n", (int)strtol(tac->op1->text, NULL, 16));
             }
             else
             {
