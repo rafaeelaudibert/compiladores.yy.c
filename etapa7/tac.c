@@ -124,12 +124,6 @@ void tac_print(TAC *tac)
         printf("TAC_FUNC_PARAM");
         break;
 
-    case TAC_ATTRIB:
-        printf("TAC_ATTRIB");
-        break;
-    case TAC_ATTRIB_VECTOR:
-        printf("TAC_ATTRIB_VECTOR");
-        break;
     case TAC_READ:
         printf("TAC_READ");
         break;

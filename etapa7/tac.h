@@ -36,9 +36,6 @@ typedef enum
     TAC_FUNC_PARAM_FUNC_NAME,
     TAC_FUNC_PARAM,
 
-    TAC_ATTRIB,
-    TAC_ATTRIB_VECTOR,
-
     TAC_READ,
     TAC_PRINT,
 

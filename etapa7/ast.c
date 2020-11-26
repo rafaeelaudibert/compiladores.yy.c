@@ -187,3 +187,131 @@ void AST_print(AST *node, int level)
     for (int i = 0; i < MAX_CHILDREN; i++)
         AST_print(node->child[i], level + 1);
 }
+
+AST *AST_optimize(AST *node)
+{
+    if (!node)
+        return NULL;
+
+    for (int i = 0; i < MAX_CHILDREN; i++)
+        node->child[i] = AST_optimize(node->child[i]);
+
+    if (
+        node->child[0] &&
+        node->child[0]->type == AST_SYMBOL &&
+        node->child[0]->symbol->type == LIT_INTEGER &&
+        node->child[1] && node->child[1]->type == AST_SYMBOL &&
+        node->child[1]->symbol->type == LIT_INTEGER)
+    {
+        long long op_1 = strtoll(node->child[0]->symbol->text, NULL, 16);
+        long long op_2 = strtoll(node->child[1]->symbol->text, NULL, 16);
+        long long new_val = 0;
+        int changed_number = 0, changed_bool = 0;
+        if (node->type == AST_ADD)
+        {
+            new_val = op_1 + op_2;
+            changed_number = 1;
+        }
+        else if (node->type == AST_SUB)
+        {
+            new_val = op_1 - op_2;
+            changed_number = 1;
+        }
+        else if (node->type == AST_MULTIPLY)
+        {
+            new_val = op_1 * op_2;
+            changed_number = 1;
+        }
+        else if (node->type == AST_DIVIDE)
+        {
+            new_val = op_1 / op_2;
+            changed_number = 1;
+        }
+        else if (node->type == AST_GT)
+        {
+            new_val = op_1 > op_2;
+            changed_bool = 1;
+        }
+        else if (node->type == AST_GE)
+        {
+            new_val = op_1 >= op_2;
+            changed_bool = 1;
+        }
+        else if (node->type == AST_LT)
+        {
+            new_val = op_1 < op_2;
+            changed_bool = 1;
+        }
+        else if (node->type == AST_LE)
+        {
+            new_val = op_1 <= op_2;
+            changed_bool = 1;
+        }
+        else if (node->type == AST_EQ)
+        {
+            new_val = op_1 == op_2;
+            changed_bool = 1;
+        }
+        else if (node->type == AST_DIF)
+        {
+            new_val = op_1 != op_2;
+            changed_bool = 1;
+        }
+
+        if (changed_number)
+        {
+            char *new_val_str = (char *)malloc(64 * sizeof(char));
+            sprintf(new_val_str, "%X", (int)new_val);
+            HASH_NODE *hash_node = hash_insert(new_val_str, LIT_INTEGER);
+
+            free(node);
+            node = AST_create(AST_SYMBOL, hash_node, NULL, NULL, NULL, NULL, NULL);
+        }
+
+        if (changed_bool)
+        {
+            HASH_NODE *hash_node = hash_insert(
+                new_val ? "TRUE" : "FALSE",
+                new_val ? LIT_TRUE : LIT_FALSE);
+
+            free(node);
+            node = AST_create(AST_SYMBOL, hash_node, NULL, NULL, NULL, NULL, NULL);
+        }
+    }
+
+    // Boolean optimization
+    if (
+        node->child[0] &&
+        node->child[0]->type == AST_SYMBOL &&
+        (node->child[0]->symbol->type == LIT_TRUE || node->child[0]->symbol->type == LIT_FALSE) &&
+        node->child[1] && node->child[1]->type == AST_SYMBOL &&
+        (node->child[1]->symbol->type == LIT_TRUE || node->child[1]->symbol->type == LIT_FALSE))
+    {
+        int op_1 = node->child[0]->symbol->type == LIT_TRUE;
+        int op_2 = node->child[1]->symbol->type == LIT_TRUE;
+        int new_val = 0;
+        int changed = 0;
+        if (node->type == AST_AND)
+        {
+            new_val = op_1 && op_2;
+            changed = 1;
+        }
+        else if (node->type == AST_OR)
+        {
+            new_val = op_1 || op_2;
+            changed = 1;
+        }
+
+        if (changed)
+        {
+            HASH_NODE *hash_node = hash_insert(
+                new_val ? "TRUE" : "FALSE",
+                new_val ? LIT_TRUE : LIT_FALSE);
+
+            free(node);
+            node = AST_create(AST_SYMBOL, hash_node, NULL, NULL, NULL, NULL, NULL);
+        }
+    }
+
+    return node;
+}

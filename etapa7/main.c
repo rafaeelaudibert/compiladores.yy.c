@@ -59,6 +59,9 @@ int main(const int argc, const char **argv)
         exit(STATUS_EXIT_SYNTAX_ERROR);
     }
 
+    // Optimize AST
+    ASTroot = AST_optimize(ASTroot);
+
     // Gera os TACS
     TAC *tac = generate_code(ASTroot);
     TAC *tac_reversed = tac_reverse(tac);
