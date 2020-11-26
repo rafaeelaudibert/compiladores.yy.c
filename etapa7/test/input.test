@@ -1,0 +1,49 @@
+i = int : 5
+v = float : 0.4F
+x = int;
+y = int[ 'C' ]: 2 3 4;
+z = int[ .4F ];
+
+
+main ( 5, 6 ) = int
+{    
+    print i
+}
+
+outra_func(x, y=float) = float {
+    return 4.0F
+};
+
+func_chamada() = int {
+    outra_func()
+};
+
+erros_do_if() = bool {
+
+    if 5 > 4 then
+        print "5 > 4"
+    
+    if 6 < 4 then
+        print "6 < 4"
+    else
+        print "aaa"
+        
+
+    i = 0
+    while i < 10 {
+        print i
+        i = i + 1 
+    }
+
+    loop i:1,12,6
+        print 4
+    
+    return true
+};
+
+indexing_and_calling() = bool {
+    x = y[4 *]
+    x = outra_func(2 3)
+
+    return true
+}

@@ -1,0 +1,27 @@
+Syntax error at line 3: Missing initialization value for variable
+Syntax error at line 4: Vector size must be an integer
+Syntax error at line 5: Vector size must be an integer
+Syntax error at line 8: Expected parameters declaration between parenthesis
+Syntax error at line 13: Expected a type keyword declaration
+Syntax error at line 19: Expected a valid command
+Syntax error at line 19: Expected a valid command
+Syntax error at line 19: Expected a valid command
+Syntax error at line 26: Expected an if condition between parenthesis
+Syntax error at line 32: Expected an if condition between parenthesis
+Syntax error at line 33: Expected an while condition between parenthesis
+Syntax error at line 38: Expected a loop condition between parenthesis
+Syntax error at line 42: Expected a valid command
+Syntax error at line 42: Expected a valid command
+Syntax error at line 42: Expected a valid command
+Syntax error at line 42: Expected a valid command
+Syntax error at line 42: Expected a valid command
+Syntax error at line 42: Expected a valid command
+Syntax error at line 42: Expected a valid command
+Syntax error at line 42: Expected a valid command
+Syntax error at line 45: Expected a valid expression for indexing the vector
+Syntax error at line 46: Expected comma between function call parameters
+Syntax error at line 49: Missing ;
+Syntax error at line 49: Missing ;
+Syntax error at line 49: Missing ;
+Syntax error at line 49: Missing ;
+Found syntax errors, exiting...
