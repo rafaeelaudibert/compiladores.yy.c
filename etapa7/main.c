@@ -7,7 +7,7 @@
 #include "chainedList.h"
 #include "codegen.h"
 #include "tac.h"
-#include "ASMGeneration.h"
+#include "asmGeneration.h"
 
 // Fornecido pelo lexer em lex.yy.c
 extern char *yytext;
