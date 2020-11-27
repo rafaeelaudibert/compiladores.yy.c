@@ -261,7 +261,7 @@ AST *AST_optimize(AST *node)
         if (changed_number)
         {
             char *new_val_str = (char *)malloc(64 * sizeof(char));
-            sprintf(new_val_str, "%X", (int)new_val);
+            sprintf(new_val_str, "0%X", (int)new_val);
             HASH_NODE *hash_node = hash_insert(new_val_str, LIT_INTEGER);
 
             free(node);
